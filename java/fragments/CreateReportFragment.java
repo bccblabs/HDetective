@@ -52,12 +52,13 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
 
     @OnClick(R.id.report)
     public void reportSamples () {
+        Toast.makeText(context, String.format("Reported all %d Samples!", reportResultsAdapter.getItemCount()), Toast.LENGTH_SHORT).show();
         for (HDSampleParse sample : reportResultsAdapter.getItems()) {
             sample.setReported(true);
             sample.saveEventually();
         }
-        Toast.makeText(context, String.format(" %d samples reported!", reportResultsAdapter.getItemCount()), Toast.LENGTH_SHORT).show();
-//        loadUnreportedItems();
+        reportResultsAdapter.clear();
+            reportResultsAdapter.notifyDataSetChanged();
     }
 
     private ReportResultsAdapter reportResultsAdapter;
