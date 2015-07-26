@@ -1,6 +1,7 @@
 package fragments;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -65,7 +66,7 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
     private Bitmap bitmap;
     private Context context;
 
-    public static CreateReportFragment newInstance () {
+    public CreateReportFragment newInstance () {
         return new CreateReportFragment();
     }
 
@@ -127,7 +128,7 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate (R.layout.create_report, container, false);
+        View v = inflater.inflate(R.layout.create_report, container, false);
         ButterKnife.bind(this, v);
         reportResultsAdapter = new ReportResultsAdapter();
         samples_recycler.setAdapter(reportResultsAdapter);
@@ -145,7 +146,7 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
                     Classification classification = new Classification();
                     classification.setClass_name(classificationLabel);
                     classification.setProb(-1.0);
-                    classifications.add (classification);
+                    classifications.add(classification);
                 }
                 sample.setClassifications(classifications);
                 Bundle args = new Bundle();
@@ -163,6 +164,9 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.remove(this);
+        ft.commit();
     }
 
 }

@@ -2,6 +2,8 @@ package fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,20 +40,25 @@ import models.HDSample;
 import models.HDSampleParse;
 import requests.ClassifyRequest;
 import widgets.SquareImageView;
+import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
 /**
  * Created by bski on 7/25/15.
  */
-public class EditSaveResultsFragment extends Fragment {
+public class EditSaveResultsFragment extends Fragment implements ScreenShotable {
 
     public final String TAG = getClass().getCanonicalName();
     public static final String EXTRA_IMAGE_DATA = "extra_image_data";
+    private Bitmap bitmap;
     private Context context;
     private HDSampleParse hdSampleParse;
     private HDSample hdSample;
     private SaveResultFragment saveResultFragment;
     private SpiceManager spiceManager = new SpiceManager(InMemorySpiceService.class);
     private ClassificationResultsAdapter classificationResultsAdapter;
+
+    @Bind(R.id.edit_save_container)
+    View containerView;
 
     @Bind(R.id.photo)
     SquareImageView photo_holder;
@@ -132,6 +139,25 @@ public class EditSaveResultsFragment extends Fragment {
         return new EditSaveResultsFragment();
     }
     private OnRetakePhotoCallback retakePhotoCallback;
+    @Override
+    public void takeScreenShot () {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Bitmap bitmap = Bitmap.createBitmap(containerView.getWidth(),
+                        containerView.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                containerView.draw(canvas);
+                EditSaveResultsFragment.this.bitmap = bitmap;
+            }
+        };
+
+        thread.start();
+    }
+
+    @Override
+    public Bitmap getBitmap() { return bitmap; }
+
 
     @Override
     public void onAttach (Activity activity) {

@@ -43,7 +43,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
     private List<SlideMenuItem> list = new ArrayList<>();
     private CaptureFragment captureFragmentFragment;
     private EditSaveResultsFragment editSaveResultsFragment;
-    private CreateReportFragment createReportFragment;
     private ViewAnimator viewAnimator;
     private LinearLayout linearLayout;
 
@@ -171,13 +170,13 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
 
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String fragmentName) {
-        View view = findViewById(R.id.content_frame);
-        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-        SupportAnimator animator = ViewAnimationUtils.createCircularReveal(view, 0, topPosition, 0, finalRadius);
-        animator.setInterpolator(new AccelerateInterpolator());
-        animator.setDuration(ViewAnimator.CIRCULAR_REVEAL_ANIMATION_DURATION);
-        findViewById(R.id.content_overlay).setBackgroundDrawable(new BitmapDrawable(getResources(), screenShotable.getBitmap()));
-        animator.start();
+//        View view = findViewById(R.id.content_frame);
+//        int finalRadius = Math.max(view.getWidth(), view.getHeight());
+//        SupportAnimator animator = ViewAnimationUtils.createCircularReveal(view, 0, topPosition, 0, finalRadius);
+//        animator.setInterpolator(new AccelerateInterpolator());
+//        animator.setDuration(ViewAnimator.CIRCULAR_REVEAL_ANIMATION_DURATION);
+//        findViewById(R.id.content_overlay).setBackgroundDrawable(new BitmapDrawable(getResources(), screenShotable.getBitmap()));
+//        animator.start();
 
         switch (fragmentName) {
             case "Capture":
@@ -185,7 +184,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, captureFragmentFragment).commit();
                 return captureFragmentFragment;
             case "History":
-                createReportFragment = CreateReportFragment.newInstance();
+                CreateReportFragment createReportFragment = new CreateReportFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, createReportFragment).commit();
                 return createReportFragment;
         }

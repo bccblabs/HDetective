@@ -28,7 +28,7 @@ public class Util {
                     break;
                 }
                 case "WD_Red_4.0TB": {
-                    hd_string = "Western Digital Green 4 TB";
+                    hd_string = "Western Digital Red 4 TB";
                     break;
                 }
                 case "WD_Green_6.0TB": {
