@@ -22,10 +22,6 @@ public class HDSampleParse extends ParseObject {
 
     public ParseFile getHDPhoto () { return getParseFile("hd_photo"); }
 
-    public void setTargetLabel (String tgt_label) { put("tgt_label", tgt_label); }
-
-    public String getTargetLabel () {return getString ("tgt_label"); }
-
     public void setReported (boolean reported) { put("reported", reported);}
 
     public boolean getReported () { return getBoolean("reported"); }
@@ -34,8 +30,15 @@ public class HDSampleParse extends ParseObject {
 
     public Date getReportedDate () { return getDate("reportedDate"); }
 
-    public void setClassifiedLabels(List<String> labels) { put("classified_labels", labels); }
+    public void setSerialCode (String serialCode) { put ("serial_code", serialCode); }
 
-    public List<String> getClassifiedLabels () { return getList("classified_labels"); }
+    public String getSerialCode () { return getString("serial_code"); }
 
+    public void setClassifiedLabel(String label) { put ("label", label); }
+
+    public String getClassifiedLabel() { return getString("label"); }
+
+    public Double getClassificationProb () { return getDouble("prob"); }
+
+    public void setClassificationProb (Double prob) { put ("prob", prob); }
 }

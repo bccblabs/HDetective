@@ -43,6 +43,27 @@ public class Util {
                     hd_string = "Western Digital Red 6 TB";
                     break;
                 }
+                case "not_WD": {
+                    hd_string = "Not Western Digital Manufactured";
+                    break;
+                }
+                case "WD": {
+                    hd_string = "Western Digital Manufactured";
+//                    hd_string = "WD";
+                    break;
+                }
+                case "small_board" : {
+                    hd_string = "Small Board";
+                    break;
+                }
+                case "large_board": {
+                    hd_string = "Large Board";
+                    break;
+                }
+                case "non_WD": {
+                    hd_string = "Not Western Digital Manufactured";
+                    break;
+                }
             }
             if (hd_string != null)
                 result += hd_string + delimiter;

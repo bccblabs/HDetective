@@ -2,7 +2,6 @@ package carmera.io.wdetector;
 
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Parcelable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -10,23 +9,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.ParcelableSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fragments.CaptureFragment;
+import fragments.InitFragment;
 import fragments.CreateReportFragment;
 import fragments.EditSaveResultsFragment;
-import io.codetail.animation.SupportAnimator;
-import io.codetail.animation.ViewAnimationUtils;
 import yalantis.com.sidemenu.interfaces.Resourceble;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 import yalantis.com.sidemenu.model.SlideMenuItem;
@@ -35,14 +29,18 @@ import yalantis.com.sidemenu.util.ViewAnimator;
 
 public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimatorListener,
                                                        EditSaveResultsFragment.OnRetakePhotoCallback,
-                                                       CaptureFragment.OnCameraResultListener {
+                                                       CaptureFragment.OnCameraResultListener,
+                                                       InitFragment.StartCaptureListener {
 
     public static final String CLOSE = "Close";
+    public static final String EXTRA_SAMPLE_DETAILS = "extra_sample_details";
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private List<SlideMenuItem> list = new ArrayList<>();
-    private CaptureFragment captureFragmentFragment;
+
+    private InitFragment initFragment;
     private EditSaveResultsFragment editSaveResultsFragment;
+    private CaptureFragment captureFragment;
     private ViewAnimator viewAnimator;
     private LinearLayout linearLayout;
 
@@ -50,19 +48,31 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public void retakePhoto() {
-        captureFragmentFragment = CaptureFragment.newInstance();
+        initFragment = InitFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, captureFragmentFragment)
+                .replace(R.id.content_frame, initFragment)
                 .commit();
 
     }
 
     @Override
-    public void OnCameraResult (Parcelable image_data) {
-        editSaveResultsFragment = new EditSaveResultsFragment();
-        assert (image_data != null);
+    public void OnStartCapture(Parcelable hdSample) {
+        captureFragment = CaptureFragment.newInstance();
+        assert (hdSample != null);
         Bundle args = new Bundle();
-        args.putParcelable(EditSaveResultsFragment.EXTRA_IMAGE_DATA , image_data);
+        args.putParcelable(EXTRA_SAMPLE_DETAILS, hdSample);
+        captureFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, captureFragment)
+                .commit();
+    }
+
+    @Override
+    public void OnCameraResult (Parcelable hdSample) {
+        editSaveResultsFragment = new EditSaveResultsFragment();
+        assert (hdSample != null);
+        Bundle args = new Bundle();
+        args.putParcelable(EXTRA_SAMPLE_DETAILS, hdSample);
         editSaveResultsFragment.setArguments(args);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, editSaveResultsFragment)
@@ -73,9 +83,9 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base);
-        captureFragmentFragment = CaptureFragment.newInstance();
+        initFragment = InitFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, captureFragmentFragment)
+                .replace(R.id.content_frame, initFragment)
                 .commit();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -90,7 +100,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
         setActionBar();
         createMenuList();
-        viewAnimator = new ViewAnimator<>(this, list, captureFragmentFragment, drawerLayout, this);
+        viewAnimator = new ViewAnimator<>(this, list, initFragment, drawerLayout, this);
     }
 
     private void createMenuList() {
@@ -112,14 +122,8 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
             actionbar.setDisplayHomeAsUpEnabled(true);
         }
         drawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                toolbar,  /* nav drawer icon to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
+                this, drawerLayout, toolbar,R.string.drawer_open,R.string.drawer_close
         ) {
-
-            /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 linearLayout.removeAllViews();
@@ -132,8 +136,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
                 if (slideOffset > 0.6 && linearLayout.getChildCount() == 0)
                     viewAnimator.showMenuContent();
             }
-
-            /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
             }
@@ -170,19 +172,11 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
 
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String fragmentName) {
-//        View view = findViewById(R.id.content_frame);
-//        int finalRadius = Math.max(view.getWidth(), view.getHeight());
-//        SupportAnimator animator = ViewAnimationUtils.createCircularReveal(view, 0, topPosition, 0, finalRadius);
-//        animator.setInterpolator(new AccelerateInterpolator());
-//        animator.setDuration(ViewAnimator.CIRCULAR_REVEAL_ANIMATION_DURATION);
-//        findViewById(R.id.content_overlay).setBackgroundDrawable(new BitmapDrawable(getResources(), screenShotable.getBitmap()));
-//        animator.start();
-
         switch (fragmentName) {
             case "Capture":
-                captureFragmentFragment = CaptureFragment.newInstance();
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, captureFragmentFragment).commit();
-                return captureFragmentFragment;
+                initFragment = InitFragment.newInstance();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, initFragment).commit();
+                return initFragment;
             case "History":
                 CreateReportFragment createReportFragment = new CreateReportFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, createReportFragment).commit();
@@ -210,15 +204,17 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public void disableHomeButton() {
-        getSupportActionBar().setHomeButtonEnabled(false);
-
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null)
+            toolbar.setHomeButtonEnabled(false);
     }
 
     @Override
     public void enableHomeButton() {
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null)
+            toolbar.setHomeButtonEnabled(true);
         drawerLayout.closeDrawers();
-
     }
 
     @Override

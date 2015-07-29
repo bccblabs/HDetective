@@ -9,8 +9,10 @@ import java.util.List;
 public class HDSample {
     public String parse_id;
     public String date;
-    public String customer_input_label;
-    public List<Classification> classifications = new ArrayList<>();
+    public String serial_code;
+    public byte[] image_data;
+    public String label;
+    public Double prob;
 
     public String getParse_id() {
         return parse_id;
@@ -24,23 +26,39 @@ public class HDSample {
         return date;
     }
 
+    public void setSerial_code(String serial_code) {
+        this.serial_code = serial_code;
+    }
+
+    public byte[] getImage_data() {
+        return image_data;
+    }
+
+    public void setImage_data(byte[] image_data) {
+        this.image_data = image_data;
+    }
+
     public void setDate(String date) {
         this.date = date;
     }
 
-    public String getCustomer_input_label() {
-        return customer_input_label;
+    public String getSerial_code() {
+        return serial_code;
     }
 
-    public void setCustomer_input_label(String customer_input_label) {
-        this.customer_input_label = customer_input_label;
+    public Double getProb() {
+        return prob;
     }
 
-    public List<Classification> getClassifications() {
-        return classifications;
+    public void setProb(Double prob) {
+        this.prob = prob;
     }
 
-    public void setClassifications(List<Classification> classifications) {
-        this.classifications = classifications;
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

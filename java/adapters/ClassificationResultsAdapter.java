@@ -12,8 +12,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carmera.io.wdetector.R;
+import de.hdodenhof.circleimageview.CircleImageView;
 import models.Classification;
-import widgets.SquareImageView;
 
 /**
  * Created by bski on 7/26/15.
@@ -64,6 +64,22 @@ public class ClassificationResultsAdapter extends BetterRecyclerAdapter<Classifi
                 Picasso.with(context).load(R.drawable.wd_red_6tb).fit().centerCrop().into(viewHolder.hd_label_image);
                 break;
             }
+            case "not_WD": {
+                viewHolder.label_name.setText ("Not Western Digital Manufactured");
+                Picasso.with(context).load(R.drawable.dell_2tb).fit().centerCrop().into(viewHolder.hd_label_image);
+                break;
+            }
+            case "WD": {
+//                viewHolder.label_name.setText("WD");
+                viewHolder.label_name.setText("Western Digital Manufactured");
+                Picasso.with(context).load(R.drawable.wd_red_6tb).fit().centerCrop().into(viewHolder.hd_label_image);
+                break;
+            }
+            case "non_WD": {
+                viewHolder.label_name.setText("Non Western Digital Manufactured");
+                Picasso.with(context).load(R.drawable.wd_blk_enterprice_500gb).fit().centerCrop().into(viewHolder.hd_label_image);
+                break;
+            }
         }
         if (classification.getProb() > 0 )
             viewHolder.hd_label_prob.setText(String.format("%.2f", classification.getProb() * 100) + " %");
@@ -72,7 +88,7 @@ public class ClassificationResultsAdapter extends BetterRecyclerAdapter<Classifi
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.hd_image)
-        SquareImageView hd_label_image;
+        CircleImageView hd_label_image;
 
         @Bind(R.id.hd_label_name)
         public TextView label_name;

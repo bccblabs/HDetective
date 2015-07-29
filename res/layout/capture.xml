@@ -10,14 +10,6 @@
         android:layout_height="match_parent"
         android:id="@+id/camera_preview"/>
 
-    <widgets.VerticalSeekBar
-        android:id="@+id/zoombar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"/>
-
     <com.gc.materialdesign.views.ButtonFloat
         android:id="@+id/capture_btn"
         android:layout_width="wrap_content"

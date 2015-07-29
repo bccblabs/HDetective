@@ -8,4 +8,15 @@
     <string name="wd_app_client_key">NcWpHSbqhWPAvB3QiuOV1g1iW3L0JD4kAU9GE0o8</string>
     <string name="back_to_camera">Back To Camera</string>
     <string name="save_result">Save Result</string>
+    <string name="init_capture">Examine Sample</string>
+    <string name="step_desc_0">First, please enter the hard drive serial number before the dash</string>
+    <string name="step_desc_1">Second, capture the hard drive PCB circuit image to examine</string>
+    <string name="step_desc_2">Check the result and Done!</string>
+    <string name="label_hint">Enter Serial Code Here</string>
+    <string name="classifications_result">Classification Results</string>
+    <string name="date_title">Exam Date</string>
+    <string name="serial_code">Serial Code</string>
+    <string name="exam_result">Exam Result</string>
+    <string name="certainty">Certainty</string>
+    <string name="done">Done!</string>
 </resources>

@@ -32,7 +32,9 @@ public class ClassifyRequest extends OkHttpSpiceRequest<Classifications> {
     public Classifications loadDataFromNetwork () throws Exception {
 
         try {
-            String req_json = String.format ( "{\"classifier_id\": 34343, \"image_url\": \"%s\"}", image_url) ;
+//            String req_json = String.format ( "{\"classifier_id\": 34343, \"image_url\": \"%s\"}", image_url) ;
+//            String req_json = String.format ( "{\"classifier_id\": 34331, \"image_url\": \"%s\"}", image_url) ;
+            String req_json = String.format ( "{\"classifier_id\": 34628, \"image_url\": \"%s\"}", image_url) ;
             Log.i (TAG, req_json);
             RequestBody body = RequestBody.create(JSON, req_json);
             Request request = new Request.Builder()

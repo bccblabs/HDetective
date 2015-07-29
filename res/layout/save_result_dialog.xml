@@ -1,51 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:layout_margin="5dp"
+    android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="@android:color/holo_blue_bright"
-        android:textSize="20sp"
-        android:id="@+id/date_view"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="20sp"
-        android:text="Classification Results"
-        />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/classifications_recycler"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:clipToPadding="false"
-        />
-
-    <fr.ganfra.materialspinner.MaterialSpinner
-        android:id="@+id/correct_input_spinner"
-        app:ms_multiline="false"
-        android:layout_margin="20dp"
-        app:ms_hint="Customer Input Label"
-        app:ms_floatingLabelText="Customer Label"
-        app:ms_arrowColor="#0000FF"
-        app:ms_arrowSize="16dp"
-        app:ms_alignLabels="false"
-        app:ms_floatingLabelColor="#00FF00"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content">
+        <TextView
+            style="@style/DescStyle"
+            android:text="@string/date_title"/>
+        <TextView
+            style="@style/EntryStyle"
+            android:id="@+id/date_text"/>
+        <TextView
+            style="@style/DescStyle"
+            android:text="@string/serial_code"/>
+        <TextView
+            style="@style/EntryStyle"
+            android:id="@+id/serial_text"/>
+        <TextView
+            style="@style/DescStyle"
+            android:text="@string/exam_result"
+            />
+        <TextView
+            style="@style/EntryStyle"
+            android:id="@+id/exam_result_text"/>
+        <TextView
+            style="@style/DescStyle"
+            android:text="@string/certainty"/>
+        <TextView
+            style="@style/EntryStyle"
+            android:id="@+id/certainty_text"/>
+    </LinearLayout>
     <com.gc.materialdesign.views.ButtonRectangle
         android:id="@+id/done_button"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/holo_blue_dark"
-        android:text="DONE"
+        android:text="@string/done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-</LinearLayout>
+</RelativeLayout>

@@ -32,6 +32,7 @@ import adapters.ReportResultsAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import carmera.io.wdetector.Base;
 import carmera.io.wdetector.R;
 import models.Classification;
 import models.HDSample;
@@ -48,7 +49,6 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
 
     @Bind(R.id.unreported_samples_recycler)
     RecyclerView samples_recycler;
-
 
     @OnClick(R.id.report)
     public void reportSamples () {
@@ -125,8 +125,6 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.create_report, container, false);
@@ -139,19 +137,14 @@ public class CreateReportFragment extends Fragment implements ScreenShotable {
             @Override
             public void onItemClick(View v, HDSampleParse item, int position) {
                 HDSample sample = new HDSample();
-                sample.setCustomer_input_label(item.getTargetLabel());
+                sample.setLabel(item.getClassifiedLabel());
+                sample.setProb(item.getClassificationProb());
+                sample.setSerial_code(item.getSerialCode());
+
                 sample.setParse_id(item.getObjectId());
                 sample.setDate(item.getCreatedAt().toString());
-                List<Classification> classifications = new ArrayList<Classification>();
-                for (String classificationLabel : item.getClassifiedLabels()) {
-                    Classification classification = new Classification();
-                    classification.setClass_name(classificationLabel);
-                    classification.setProb(-1.0);
-                    classifications.add(classification);
-                }
-                sample.setClassifications(classifications);
                 Bundle args = new Bundle();
-                args.putParcelable(SaveResultFragment.EXTRA_SAMPLE_DETAILS, Parcels.wrap(HDSample.class, sample));
+                args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, Parcels.wrap(HDSample.class, sample));
                 saveResultFragment = SaveResultFragment.newInstance(true);
                 saveResultFragment.setArguments(args);
                 saveResultFragment.show(getChildFragmentManager(), "edit_and_save");

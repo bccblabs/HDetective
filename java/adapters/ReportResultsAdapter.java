@@ -14,7 +14,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import carmera.io.wdetector.R;
 import models.HDSampleParse;
-import widgets.SquareImageView;
 
 /**
  * Created by bski on 7/26/15.

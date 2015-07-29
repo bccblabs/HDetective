@@ -3,7 +3,6 @@ package fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,8 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.Toast;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.octo.android.robospice.SpiceManager;
@@ -25,13 +22,15 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
-
 import org.parceler.Parcels;
+
+import java.util.List;
 
 import adapters.ClassificationResultsAdapter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import carmera.io.wdetector.Base;
 import carmera.io.wdetector.InMemorySpiceService;
 import carmera.io.wdetector.R;
 import models.Classification;
@@ -48,17 +47,13 @@ import yalantis.com.sidemenu.interfaces.ScreenShotable;
 public class EditSaveResultsFragment extends Fragment implements ScreenShotable {
 
     public final String TAG = getClass().getCanonicalName();
-    public static final String EXTRA_IMAGE_DATA = "extra_image_data";
-    private Bitmap bitmap;
     private Context context;
     private HDSampleParse hdSampleParse;
     private HDSample hdSample;
     private SaveResultFragment saveResultFragment;
     private SpiceManager spiceManager = new SpiceManager(InMemorySpiceService.class);
     private ClassificationResultsAdapter classificationResultsAdapter;
-
-    @Bind(R.id.edit_save_container)
-    View containerView;
+    private OnRetakePhotoCallback retakePhotoCallback;
 
     @Bind(R.id.photo)
     SquareImageView photo_holder;
@@ -77,11 +72,12 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @OnClick(R.id.save_item)
     public void saveItem() {
         Bundle args = new Bundle();
-        args.putParcelable(SaveResultFragment.EXTRA_SAMPLE_DETAILS, Parcels.wrap(HDSample.class, this.hdSample));
+        args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, Parcels.wrap(HDSample.class, this.hdSample));
         saveResultFragment = SaveResultFragment.newInstance(false);
         saveResultFragment.setArguments(args);
         saveResultFragment.show(getChildFragmentManager(), "edit_and_save");
     }
+
     private SaveCallback parseImageSaveCallback = new SaveCallback() {
         @Override
         public void done(ParseException e) {
@@ -93,7 +89,9 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
                         .into(photo_holder);
 
                 ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl());
-                spiceManager.execute(classifyRequest, hdSampleParse.getObjectId(), DurationInMillis.ALWAYS_RETURNED, new PredictionsRequestListener());
+                spiceManager.execute(classifyRequest, hdSampleParse.getObjectId(),
+                                                      DurationInMillis.ALWAYS_RETURNED,
+                                                      new PredictionsRequestListener());
                 hdSample.setDate(hdSampleParse.getCreatedAt().toString());
                 hdSample.setParse_id(hdSampleParse.getObjectId());
             }
@@ -108,24 +106,16 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
 
         @Override
         public void onRequestSuccess (Classifications result) {
-            if (result!=null) {
+            if (result != null) {
+                List<Classification> classifications = result.getClassifications();
                 progress_bar.setVisibility(View.GONE);
                 classifications_recycler.setVisibility(View.VISIBLE);
-                classificationResultsAdapter = new ClassificationResultsAdapter();
-                classifications_recycler.setAdapter(classificationResultsAdapter);
-                classifications_recycler.setLayoutManager(new LinearLayoutManager(context));
-                classifications_recycler.setHasFixedSize(true);
-
-                classificationResultsAdapter.addAll(result.getClassifications().subList(0,3));
-                hdSample.setClassifications(result.getClassifications().subList(0,2));
-                classificationResultsAdapter.notifyDataSetChanged();
-
-                Toast.makeText(getActivity(), "Predictions Received: " + result.getClassifications().size(), Toast.LENGTH_SHORT).show();
-
-                for (Classification prediction : result.getClassifications()) {
-
-                    Log.i(TAG, prediction.getClass_name() + ": " + prediction.getProb().toString());
+                classificationResultsAdapter.addAll(classifications);
+                if (classifications.size() > 0) {
+                    hdSample.setProb(classifications.get(0).prob);
+                    hdSample.setLabel(classifications.get(0).class_name);
                 }
+                classificationResultsAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -138,26 +128,13 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     public static EditSaveResultsFragment newInstance () {
         return new EditSaveResultsFragment();
     }
-    private OnRetakePhotoCallback retakePhotoCallback;
+
     @Override
     public void takeScreenShot () {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                Bitmap bitmap = Bitmap.createBitmap(containerView.getWidth(),
-                        containerView.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                containerView.draw(canvas);
-                EditSaveResultsFragment.this.bitmap = bitmap;
-            }
-        };
-
-        thread.start();
     }
 
     @Override
-    public Bitmap getBitmap() { return bitmap; }
-
+    public Bitmap getBitmap() { return null; }
 
     @Override
     public void onAttach (Activity activity) {
@@ -173,19 +150,28 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Override
     public void onCreate (Bundle savedBundle) {
         super.onCreate(savedBundle);
-        Bundle args = getArguments();
-        byte[] image_data = Parcels.unwrap(args.getParcelable(EXTRA_IMAGE_DATA));
-        hdSampleParse = new HDSampleParse();
-        ParseFile hd_photo = new ParseFile(image_data);
-        hdSampleParse.setHDPhoto(hd_photo);
-        hdSampleParse.saveInBackground(parseImageSaveCallback);
-        hdSample = new HDSample();
+        try {
+            Bundle args = getArguments();
+            hdSample = Parcels.unwrap(args.getParcelable(Base.EXTRA_SAMPLE_DETAILS));
+            hdSampleParse = new HDSampleParse();
+            ParseFile hd_photo = new ParseFile(hdSample.image_data);
+            hdSampleParse.setHDPhoto(hd_photo);
+            hdSampleParse.saveInBackground(parseImageSaveCallback);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            spiceManager.cancelAllRequests();
+            retakePhotoCallback.retakePhoto();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.edit_save_result, container, false);
         ButterKnife.bind(this, v);
+        classificationResultsAdapter = new ClassificationResultsAdapter();
+        classifications_recycler.setAdapter(classificationResultsAdapter);
+        classifications_recycler.setLayoutManager(new LinearLayoutManager(context));
+        classifications_recycler.setHasFixedSize(true);
         return v;
     }
 
@@ -218,41 +204,6 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
-    }
-
-    public class DropDownAnim extends Animation {
-        private final int targetHeight;
-        private final View view;
-        private final boolean down;
-
-        public DropDownAnim(View view, int targetHeight, boolean down) {
-            this.view = view;
-            this.targetHeight = targetHeight;
-            this.down = down;
-        }
-
-        @Override
-        protected void applyTransformation(float interpolatedTime, Transformation t) {
-            int newHeight;
-            if (down) {
-                newHeight = (int) (targetHeight * interpolatedTime);
-            } else {
-                newHeight = (int) (targetHeight * (1 - interpolatedTime));
-            }
-            view.getLayoutParams().height = newHeight;
-            view.requestLayout();
-        }
-
-        @Override
-        public void initialize(int width, int height, int parentWidth,
-                               int parentHeight) {
-            super.initialize(width, height, parentWidth, parentHeight);
-        }
-
-        @Override
-        public boolean willChangeBounds() {
-            return true;
-        }
     }
 
 }
