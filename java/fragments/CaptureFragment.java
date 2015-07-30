@@ -3,19 +3,30 @@ package fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+
 import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 import com.gc.materialdesign.views.ButtonFloat;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
+
 import org.parceler.Parcels;
+import org.w3c.dom.Text;
+
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import carmera.io.wdetector.Base;
 import carmera.io.wdetector.R;
@@ -29,6 +40,10 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
     private FrameLayout camera_preview;
     private OnCameraResultListener camera_result_callback = null;
     private HDSample hdSample;
+    private Shimmer shimmer;
+
+    @Bind(R.id.label_in_scan)
+    ShimmerTextView label;
 
     public interface OnCameraResultListener {
         public void OnCameraResult (Parcelable sample_details);
@@ -77,7 +92,6 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
         View cameraView = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.capture, container, false);
         camera_preview = (FrameLayout) v.findViewById(R.id.camera_preview);
-
         ((ViewGroup)v.findViewById(R.id.camera_preview)).addView(cameraView);
 
         capture_btn = (ButtonFloat) v.findViewById(R.id.capture_btn);
@@ -90,6 +104,11 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
         });
 
         ButterKnife.bind(this, v);
+        shimmer = new Shimmer();
+        label.setText(hdSample.getSerial_code());
+        Log.i(getClass().getCanonicalName(), hdSample.getSerial_code());
+        shimmer.setDuration(2000);
+        shimmer.start(label);
         camera_preview.setOnTouchListener(this);
         return v;
     }
