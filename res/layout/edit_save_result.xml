@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/edit_save_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <TextView
-        style="@style/DescStyle"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
-        android:text="@string/classifications_result"/>
-
     <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
         android:orientation="vertical"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:id="@+id/desc_text"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_light"
+            app:reflectionColor="@android:color/background_light"
+            android:text="@string/classifications_result"/>
         <FrameLayout
+            android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             >
             <widgets.SquareImageView
                 android:layout_gravity="center"
@@ -37,46 +40,43 @@
                 android:layout_height="50dp"
                 android:background="@android:color/background_light" />
         </FrameLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/classifications_recycler"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                />
-        </LinearLayout>
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:layout_marginTop="25dp"
+            android:id="@+id/result_txt"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="38sp"
+            android:letterSpacing="0.8"
+            android:textColor="@android:color/background_light"
+            app:reflectionColor="@android:color/background_light"/>
     </LinearLayout>
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="28dp">
         <com.gc.materialdesign.views.ButtonRectangle
             android:id="@+id/retake_photo_btn"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/back_to_camera"
+            android:layout_weight="1"
+            android:text="@string/retake"
             android:background="@android:color/holo_blue_light">
         </com.gc.materialdesign.views.ButtonRectangle>
         <com.gc.materialdesign.views.ButtonRectangle
-            android:id="@+id/save_item"
+                android:id="@+id/save_result_btn"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_weight="1"
             android:text="@string/save_result"
-            android:background="@android:color/holo_green_light">
+                android:background="@android:color/holo_green_dark">
         </com.gc.materialdesign.views.ButtonRectangle>
+
     </LinearLayout>
+
 </RelativeLayout>

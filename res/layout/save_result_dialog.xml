@@ -1,47 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_margin="5dp"
-    android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
+    android:background="#99000000"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TableLayout
+        android:layout_marginTop="28dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
-            style="@style/DescStyle"
-            android:text="@string/date_title"/>
-        <TextView
-            style="@style/EntryStyle"
-            android:id="@+id/date_text"/>
-        <TextView
-            style="@style/DescStyle"
-            android:text="@string/serial_code"/>
-        <TextView
-            style="@style/EntryStyle"
-            android:id="@+id/serial_text"/>
-        <TextView
-            style="@style/DescStyle"
-            android:text="@string/exam_result"
-            />
-        <TextView
-            style="@style/EntryStyle"
-            android:id="@+id/exam_result_text"/>
-        <TextView
-            style="@style/DescStyle"
-            android:text="@string/certainty"/>
-        <TextView
-            style="@style/EntryStyle"
-            android:id="@+id/certainty_text"/>
-    </LinearLayout>
+        <TableRow
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            >
+            <TextView
+                style="@style/DescStyle"
+                android:textSize="14sp"
+                android:layout_gravity="start"
+                android:text="@string/date_title"/>
+            <TextView
+                style="@style/EntryStyle"
+                android:textSize="14sp"
+                android:layout_gravity="end"
+                android:textColor="@android:color/background_light"
+                android:id="@+id/date_text"/>
+        </TableRow>
+        <TableRow
+            android:layout_margin="5dp"
+            >
+            <TextView
+                style="@style/DescStyle"
+                android:layout_gravity="start"
+                android:textSize="14sp"
+                android:text="@string/serial_code"/>
+            <TextView
+                style="@style/EntryStyle"
+                android:textSize="14sp"
+                android:textColor="@android:color/background_light"
+                android:layout_gravity="end"
+                android:id="@+id/serial_text"/>
+        </TableRow>
+        <TableRow
+            android:layout_margin="5dp"
+            >
+            <TextView
+                style="@style/DescStyle"
+                android:layout_gravity="start"
+                android:textSize="14sp"
+                android:text="@string/exam_result"
+                />
+            <TextView
+                style="@style/EntryStyle"
+                android:textSize="14sp"
+                android:textColor="@android:color/background_light"
+                android:layout_gravity="end"
+                android:id="@+id/exam_result_text"/>
+        </TableRow>
+        <TableRow
+            android:layout_margin="5dp"
+            >
+            <TextView
+                style="@style/DescStyle"
+                android:layout_gravity="start"
+                android:textSize="14sp"
+                android:text="@string/product_name"/>
+            <TextView
+                style="@style/EntryStyle"
+                android:textSize="14sp"
+                android:textColor="@android:color/background_light"
+                android:layout_gravity="end"
+                android:id="@+id/sample_product_name"/>
+        </TableRow>
+    </TableLayout>
     <com.gc.materialdesign.views.ButtonRectangle
+        android:layout_marginBottom="28dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_gravity="center|bottom"
         android:id="@+id/done_button"
-        android:layout_alignParentBottom="true"
         android:background="@android:color/holo_blue_dark"
         android:text="@string/done"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"/>
-</RelativeLayout>
+</LinearLayout>

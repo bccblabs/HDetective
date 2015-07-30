@@ -12,7 +12,7 @@ public class HDSample {
     public String serial_code;
     public byte[] image_data;
     public String label;
-    public Double prob;
+    public String product_name;
 
     public String getParse_id() {
         return parse_id;
@@ -46,19 +46,19 @@ public class HDSample {
         return serial_code;
     }
 
-    public Double getProb() {
-        return prob;
-    }
-
-    public void setProb(Double prob) {
-        this.prob = prob;
-    }
-
     public String getLabel() {
         return label;
     }
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getProduct_name() {
+        return product_name;
+    }
+
+    public void setProduct_name(String product_name) {
+        this.product_name = product_name;
     }
 }

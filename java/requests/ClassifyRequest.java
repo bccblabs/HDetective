@@ -22,19 +22,33 @@ public class ClassifyRequest extends OkHttpSpiceRequest<Classifications> {
             com.squareup.okhttp.MediaType.parse("application/json; charset=utf-8");
 
     private String image_url;
+    private String image_serial;
 
-    public ClassifyRequest(String image_url_) {
+    public ClassifyRequest(String image_url_, String image_serial_) {
         super(Classifications.class);
         this.image_url = image_url_;
+        this.image_serial = image_serial_;
     }
 
     @Override
     public Classifications loadDataFromNetwork () throws Exception {
 
         try {
-//            String req_json = String.format ( "{\"classifier_id\": 34343, \"image_url\": \"%s\"}", image_url) ;
-//            String req_json = String.format ( "{\"classifier_id\": 34331, \"image_url\": \"%s\"}", image_url) ;
-            String req_json = String.format ( "{\"classifier_id\": 34628, \"image_url\": \"%s\"}", image_url) ;
+            String req_json;
+            switch (image_serial) {
+                case "WD4000FYYZ-01UL1B1":
+                    req_json = String.format ( "{\"classifier_id\": 34904, \"image_url\": \"%s\"}", image_url) ;
+                    break;
+                case "WD60EZRX-00MVLB1":
+                    req_json = String.format ( "{\"classifier_id\": 34907, \"image_url\": \"%s\"}", image_url) ;
+                    break;
+                case "WD30EURS-63SPKY0":
+                    req_json = String.format ( "{\"classifier_id\": 34908, \"image_url\": \"%s\"}", image_url) ;
+                    break;
+                default:
+                    req_json = "null";
+            }
+
             Log.i (TAG, req_json);
             RequestBody body = RequestBody.create(JSON, req_json);
             Request request = new Request.Builder()

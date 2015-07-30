@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
+
+import Util.Util;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
 import butterknife.ButterKnife;
@@ -28,7 +34,10 @@ public class InitFragment extends Fragment implements ScreenShotable {
     public final String TAG = getClass().getCanonicalName();
     private StartCaptureListener startCaptureListener;
     private HDSample hdSample;
-    private Bitmap bitmap;
+    private Shimmer shimmer = new Shimmer();
+
+    @Bind (R.id.desc_text)
+    ShimmerTextView desc_text;
 
     public interface StartCaptureListener {
         public void OnStartCapture(Parcelable hd_sample);
@@ -43,7 +52,9 @@ public class InitFragment extends Fragment implements ScreenShotable {
 
     @OnClick(R.id.init_capture)
     public void init_capture() {
-        hdSample.setSerial_code(serial_code_input.getText().toString());
+        String serial_code = serial_code_input.getText().toString().trim();
+        hdSample.setSerial_code(serial_code);
+        hdSample.setProduct_name(Util.getSampleProductName(serial_code));
         Parcelable hd_sample_extra = Parcels.wrap(HDSample.class, hdSample);
         startCaptureListener.OnStartCapture(hd_sample_extra);
     }
@@ -58,6 +69,31 @@ public class InitFragment extends Fragment implements ScreenShotable {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.init_capture, container, false);
         ButterKnife.bind(this, v);
+        shimmer.setDuration(2000);
+        shimmer.start (desc_text);
+        serial_code_input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String serial_input = s.toString();
+                if (serial_input.contains("\n") || serial_input.contains("\r")) {
+                    String input_string = serial_input.replace("\n", "").replace("\r", "");
+                    hdSample.setSerial_code(input_string);
+                    hdSample.setProduct_name(Util.getSampleProductName(input_string));
+                    Parcelable hd_sample_extra = Parcels.wrap(HDSample.class, hdSample);
+                    startCaptureListener.OnStartCapture(hd_sample_extra);
+                }
+            }
+        });
         return v;
     }
 
@@ -76,6 +112,6 @@ public class InitFragment extends Fragment implements ScreenShotable {
     }
 
     @Override
-    public Bitmap getBitmap() { return bitmap; }
+    public Bitmap getBitmap() { return null; }
 
 }

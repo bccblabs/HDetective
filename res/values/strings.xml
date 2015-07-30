@@ -1,22 +1,26 @@
 <resources>
-    <string name="app_name">HDetective</string>
+    <string name="app_name">PCBA Check</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="wd_app_id">NmfDJkadMMV9ingD55koDiIPqRo3pylPoqR4y4I5</string>
     <string name="wd_app_client_key">NcWpHSbqhWPAvB3QiuOV1g1iW3L0JD4kAU9GE0o8</string>
-    <string name="back_to_camera">Back To Camera</string>
-    <string name="save_result">Save Result</string>
-    <string name="init_capture">Examine Sample</string>
-    <string name="step_desc_0">First, please enter the hard drive serial number before the dash</string>
-    <string name="step_desc_1">Second, capture the hard drive PCB circuit image to examine</string>
-    <string name="step_desc_2">Check the result and Done!</string>
-    <string name="label_hint">Enter Serial Code Here</string>
+    <string name="save_result">Next</string>
+    <string name="init_capture">Submit</string>
+    <string name="step_desc_0">Please Enter Model Number</string>
+    <string name="label_hint">Model Number Here</string>
     <string name="classifications_result">Classification Results</string>
     <string name="date_title">Exam Date</string>
     <string name="serial_code">Serial Code</string>
-    <string name="exam_result">Exam Result</string>
+    <string name="exam_result">Result</string>
     <string name="certainty">Certainty</string>
     <string name="done">Done!</string>
+    <string name="exam_more">Exam More</string>
+    <string name="serial_helper_text">Serial Code Can\'t Be Changed Once Set</string>
+    <string name="passed">Correct Hard Drive Label reported</string>
+    <string name="failed">Wrong Hard Drive Label Reported</string>
+    <string name="retake">Retake Photo</string>
+    <string name="classified_lable">Classified Label</string>
+    <string name="product_name">Product Name</string>
 </resources>

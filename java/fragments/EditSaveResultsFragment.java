@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +20,14 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
 import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
-
-import adapters.ClassificationResultsAdapter;
+import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -48,12 +49,13 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
 
     public final String TAG = getClass().getCanonicalName();
     private Context context;
+    private Shimmer shimmer = new Shimmer();
+
     private HDSampleParse hdSampleParse;
     private HDSample hdSample;
-    private SaveResultFragment saveResultFragment;
+    private SampleSavedDialog sampleSavedDialog;
     private SpiceManager spiceManager = new SpiceManager(InMemorySpiceService.class);
-    private ClassificationResultsAdapter classificationResultsAdapter;
-    private OnRetakePhotoCallback retakePhotoCallback;
+    private InitFragment.StartCaptureListener startCaptureListener;
 
     @Bind(R.id.photo)
     SquareImageView photo_holder;
@@ -61,21 +63,27 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Bind(R.id.upload_progress_bar)
     ProgressBarCircularIndeterminate progress_bar;
 
-    @Bind(R.id.classifications_recycler)
-    RecyclerView classifications_recycler;
+    @Bind(R.id.result_txt)
+    ShimmerTextView result_text;
+
+    @Bind(R.id.desc_text)
+    ShimmerTextView desc_text;
 
     @OnClick(R.id.retake_photo_btn)
     public void backToCamera () {
         spiceManager.cancelAllRequests();
-        retakePhotoCallback.retakePhoto();
+        startCaptureListener.OnStartCapture(Parcels.wrap(HDSample.class, hdSample));
     }
-    @OnClick(R.id.save_item)
-    public void saveItem() {
+
+    @OnClick(R.id.save_result_btn)
+    public void SaveResult () {
+        spiceManager.cancelAllRequests();
+        sampleSavedDialog = SampleSavedDialog.newInstance();
         Bundle args = new Bundle();
-        args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, Parcels.wrap(HDSample.class, this.hdSample));
-        saveResultFragment = SaveResultFragment.newInstance(false);
-        saveResultFragment.setArguments(args);
-        saveResultFragment.show(getChildFragmentManager(), "edit_and_save");
+        Parcelable sample = Parcels.wrap(HDSample.class, hdSample);
+        args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, sample);
+        sampleSavedDialog.setArguments(args);
+        sampleSavedDialog.show(getChildFragmentManager(), "saved");
     }
 
     private SaveCallback parseImageSaveCallback = new SaveCallback() {
@@ -88,17 +96,35 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
                         .centerCrop()
                         .into(photo_holder);
 
-                ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl());
+                ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl(), hdSample.getSerial_code());
                 spiceManager.execute(classifyRequest, hdSampleParse.getObjectId(),
                                                       DurationInMillis.ALWAYS_RETURNED,
                                                       new PredictionsRequestListener());
-                hdSample.setDate(hdSampleParse.getCreatedAt().toString());
-                hdSample.setParse_id(hdSampleParse.getObjectId());
             }
         }
     };
 
     private final class PredictionsRequestListener implements RequestListener<Classifications> {
+
+        public void setValues (Classification classification, HDSample sample, HDSampleParse sampleParse) {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm", Locale.US);
+            hdSample.setDate(df.format(hdSampleParse.getCreatedAt()));
+            hdSampleParse.setSerialCode(hdSample.serial_code);
+            hdSampleParse.setProductName(hdSample.product_name);
+            hdSampleParse.saveEventually();
+            if (classification.class_name.equals("match")) {
+                sampleParse.setClassifiedLabel("PASSED");
+                sample.setLabel("PASSED");
+                EditSaveResultsFragment.this.result_text.setText("PASSED");
+                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
+            } else {
+                sampleParse.setClassifiedLabel("FAILED");
+                sample.setLabel("FAILED");
+                EditSaveResultsFragment.this.result_text.setText("FAILED");
+                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+            }
+            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
+        }
         @Override
         public void onRequestFailure (SpiceException spiceException) {
             Toast.makeText(getActivity(), "Error: " + spiceException.getMessage(), Toast.LENGTH_SHORT).show();
@@ -109,13 +135,16 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
             if (result != null) {
                 List<Classification> classifications = result.getClassifications();
                 progress_bar.setVisibility(View.GONE);
-                classifications_recycler.setVisibility(View.VISIBLE);
-                classificationResultsAdapter.addAll(classifications);
-                if (classifications.size() > 0) {
-                    hdSample.setProb(classifications.get(0).prob);
-                    hdSample.setLabel(classifications.get(0).class_name);
+                Classification first = classifications.get(0);
+                Classification second = classifications.get(1);
+                for (Classification classification: result.getClassifications()) {
+                    Toast.makeText(context, classification.getProb() + ": " + classification.getClass_name(), Toast.LENGTH_SHORT);
                 }
-                classificationResultsAdapter.notifyDataSetChanged();
+                if (first.getProb() > second.getProb()) {
+                    setValues(first, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
+                } else {
+                    setValues(second, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
+                }
             }
         }
     }
@@ -141,7 +170,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         super.onAttach(activity);
         this.context = activity;
         try {
-            retakePhotoCallback = (OnRetakePhotoCallback) activity;
+            startCaptureListener = (InitFragment.StartCaptureListener) activity;
         } catch (ClassCastException e) {
             Log.e (TAG, e.getMessage());
         }
@@ -160,7 +189,6 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             spiceManager.cancelAllRequests();
-            retakePhotoCallback.retakePhoto();
         }
     }
 
@@ -168,10 +196,8 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.edit_save_result, container, false);
         ButterKnife.bind(this, v);
-        classificationResultsAdapter = new ClassificationResultsAdapter();
-        classifications_recycler.setAdapter(classificationResultsAdapter);
-        classifications_recycler.setLayoutManager(new LinearLayoutManager(context));
-        classifications_recycler.setHasFixedSize(true);
+        shimmer.setDuration(2000);
+        shimmer.start(desc_text);
         return v;
     }
 

@@ -19,7 +19,6 @@ import java.util.List;
 
 import fragments.CaptureFragment;
 import fragments.InitFragment;
-import fragments.CreateReportFragment;
 import fragments.EditSaveResultsFragment;
 import yalantis.com.sidemenu.interfaces.Resourceble;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
@@ -69,7 +68,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public void OnCameraResult (Parcelable hdSample) {
-        editSaveResultsFragment = new EditSaveResultsFragment();
+        editSaveResultsFragment = EditSaveResultsFragment.newInstance();
         assert (hdSample != null);
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_SAMPLE_DETAILS, hdSample);
@@ -108,8 +107,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         list.add(close);
         SlideMenuItem menuItem0 = new SlideMenuItem("Examine", R.drawable.ic_action_camera_white_small);
         list.add(menuItem0);
-        SlideMenuItem menuItem1 = new SlideMenuItem("History", R.drawable.ic_history_white_24dp);
-        list.add(menuItem1);
     }
 
     private void setActionBar() {
@@ -158,16 +155,12 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_base, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -175,12 +168,8 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         switch (fragmentName) {
             case "Capture":
                 initFragment = InitFragment.newInstance();
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, initFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, initFragment).addToBackStack("init").commit();
                 return initFragment;
-            case "History":
-                CreateReportFragment createReportFragment = new CreateReportFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, createReportFragment).commit();
-                return createReportFragment;
         }
         return null;
     }
@@ -193,9 +182,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
                 return screenShotable;
             case "Capture": {
                 return replaceFragment(screenShotable, position, "Capture");
-            }
-            case "History": {
-                return replaceFragment(screenShotable, position, "History");
             }
             default:
                 return replaceFragment(screenShotable, position, "Capture");

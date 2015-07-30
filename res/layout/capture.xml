@@ -12,11 +12,12 @@
 
     <com.gc.materialdesign.views.ButtonFloat
         android:id="@+id/capture_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_margin="28dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/holo_green_dark"
+        android:background="@android:color/holo_blue_dark"
         materialdesign:animate="true"
-        materialdesign:iconDrawable="@drawable/ic_action_camera_white_small" />
+        materialdesign:iconDrawable="@drawable/ic_photo_camera_white_48dp" />
 </RelativeLayout>

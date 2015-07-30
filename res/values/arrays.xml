@@ -8,4 +8,9 @@
         <item>Western Digital Green Power</item>
         <item>Western Digital Red 6 TB</item>
     </string-array>
+    <string-array name="serial_number_array">
+        <item>WD4000FYYZ-01UL1B1</item>
+        <item>WD60EZRX-00MVLB1</item>
+        <item>WD30EURS-63SPKY0</item>
+    </string-array>
 </resources>

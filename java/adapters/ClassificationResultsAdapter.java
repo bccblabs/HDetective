@@ -70,7 +70,6 @@ public class ClassificationResultsAdapter extends BetterRecyclerAdapter<Classifi
                 break;
             }
             case "WD": {
-//                viewHolder.label_name.setText("WD");
                 viewHolder.label_name.setText("Western Digital Manufactured");
                 Picasso.with(context).load(R.drawable.wd_red_6tb).fit().centerCrop().into(viewHolder.hd_label_image);
                 break;
@@ -80,9 +79,17 @@ public class ClassificationResultsAdapter extends BetterRecyclerAdapter<Classifi
                 Picasso.with(context).load(R.drawable.wd_blk_enterprice_500gb).fit().centerCrop().into(viewHolder.hd_label_image);
                 break;
             }
+            case "match": {
+                viewHolder.label_name.setText("Label Matched");
+                break;
+            }
+            case "no_match": {
+                viewHolder.label_name.setText("Label DIDN't Match");
+                break;
+            }
         }
         if (classification.getProb() > 0 )
-            viewHolder.hd_label_prob.setText(String.format("%.2f", classification.getProb() * 100) + " %");
+            viewHolder.hd_label_prob.setText(String.format("%.2f %%", classification.getProb()));
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -90,7 +97,7 @@ public class ClassificationResultsAdapter extends BetterRecyclerAdapter<Classifi
         @Bind(R.id.hd_image)
         CircleImageView hd_label_image;
 
-        @Bind(R.id.hd_label_name)
+        @Bind(R.id.classification_result)
         public TextView label_name;
 
         @Bind(R.id.hd_label_prob)
