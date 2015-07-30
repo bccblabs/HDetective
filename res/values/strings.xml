@@ -22,5 +22,5 @@
     <string name="failed">Wrong Hard Drive Label Reported</string>
     <string name="retake">Retake Photo</string>
     <string name="classified_lable">Classified Label</string>
-    <string name="product_name">Product Name</string>
+    <string name="product_name">Model Label</string>
 </resources>

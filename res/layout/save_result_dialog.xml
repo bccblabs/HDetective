@@ -49,14 +49,13 @@
                 style="@style/DescStyle"
                 android:layout_gravity="start"
                 android:textSize="14sp"
-                android:text="@string/exam_result"
-                />
+                android:text="@string/product_name"/>
             <TextView
                 style="@style/EntryStyle"
                 android:textSize="14sp"
                 android:textColor="@android:color/background_light"
                 android:layout_gravity="end"
-                android:id="@+id/exam_result_text"/>
+                android:id="@+id/sample_product_name"/>
         </TableRow>
         <TableRow
             android:layout_margin="5dp"
@@ -65,13 +64,14 @@
                 style="@style/DescStyle"
                 android:layout_gravity="start"
                 android:textSize="14sp"
-                android:text="@string/product_name"/>
+                android:text="@string/exam_result"
+                />
             <TextView
                 style="@style/EntryStyle"
                 android:textSize="14sp"
                 android:textColor="@android:color/background_light"
                 android:layout_gravity="end"
-                android:id="@+id/sample_product_name"/>
+                android:id="@+id/exam_result_text"/>
         </TableRow>
     </TableLayout>
     <com.gc.materialdesign.views.ButtonRectangle
