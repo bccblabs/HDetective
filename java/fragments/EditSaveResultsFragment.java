@@ -214,11 +214,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Override
     public void onViewCreated (View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Picasso.with(context).load(R.drawable.hard_disk_holder)
-                .fit()
-                .centerCrop()
-                .into(photo_holder);
-    }
+.    }
 
     @Override
     public void onStart () {

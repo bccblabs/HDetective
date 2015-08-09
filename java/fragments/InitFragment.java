@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.rengwuxian.materialedittext.MaterialAutoCompleteTextView;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
@@ -29,6 +30,8 @@ import butterknife.OnClick;
 import carmera.io.wdetector.R;
 import models.HDSample;
 import org.parceler.Parcels;
+
+import java.util.Arrays;
 
 /**
  * Created by bski on 7/28/15.
@@ -60,11 +63,11 @@ public class InitFragment extends Fragment implements ScreenShotable,
     }
 
     @Bind(R.id.serial_code_input)
-    MaterialEditText serial_code_input;
+    MaterialAutoCompleteTextView serial_code_input;
 
     @OnClick(R.id.init_capture)
     public void init_capture() {
-        String serial_code = serial_code_input.getText().toString().trim();
+        String serial_code = serial_code_input.getText().toString().replace("\n", "").replace("\r", "");
         hdSample.setSerial_code(serial_code);
         hdSample.setProduct_name(Util.getSampleProductName(serial_code));
         Parcelable hd_sample_extra = Parcels.wrap(HDSample.class, hdSample);
@@ -85,13 +88,14 @@ public class InitFragment extends Fragment implements ScreenShotable,
         shimmer.setDuration(2000);
         shimmer.start(desc_text);
         shimmer.start (manual_enter_text);
-
+        serial_code_input.setAdapter(new ArrayAdapter<String> ( getActivity(),
+                                                                android.R.layout.simple_dropdown_item_1line,
+                                                                getActivity().getResources().getStringArray(R.array.serial_number_array)));
         serial_code_input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 

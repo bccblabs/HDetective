@@ -9,7 +9,7 @@
     <string name="save_result">Next</string>
     <string name="init_capture">Submit</string>
     <string name="step_desc_0">Please Scan Model Number</string>
-    <string name="manual_enter">Manual Enter Model Number Here</string>
+    <string name="manual_enter">Select Model Number Here</string>
     <string name="label_hint">Scan Model Number Here</string>
     <string name="classifications_result">Classification Results</string>
     <string name="date_title">Exam Date</string>
