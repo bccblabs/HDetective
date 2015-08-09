@@ -11,7 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -26,8 +28,11 @@ import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import Util.Util;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -39,6 +44,8 @@ import models.Classifications;
 import models.HDSample;
 import models.HDSampleParse;
 import requests.ClassifyRequest;
+import widgets.KeyPairBoolData;
+import widgets.MultiSpinnerSearch;
 import widgets.SquareImageView;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
@@ -69,6 +76,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Bind(R.id.desc_text)
     ShimmerTextView desc_text;
 
+
     @OnClick(R.id.retake_photo_btn)
     public void backToCamera () {
         spiceManager.cancelAllRequests();
@@ -96,8 +104,9 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
                         .centerCrop()
                         .into(photo_holder);
 
+                Log.i (TAG, hdSample.getSerial_code().toUpperCase());
                 ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl(), hdSample.getSerial_code());
-                spiceManager.execute(classifyRequest, hdSampleParse.getObjectId(),
+                spiceManager.execute(classifyRequest, null,
                                                       DurationInMillis.ALWAYS_RETURNED,
                                                       new PredictionsRequestListener());
             }
@@ -127,7 +136,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         }
         @Override
         public void onRequestFailure (SpiceException spiceException) {
-            Toast.makeText(getActivity(), "Error: " + spiceException.getMessage(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "Error: " + spiceException.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -137,9 +146,9 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
                 progress_bar.setVisibility(View.GONE);
                 Classification first = classifications.get(0);
                 Classification second = classifications.get(1);
-                for (Classification classification: result.getClassifications()) {
-                    Toast.makeText(context, classification.getProb() + ": " + classification.getClass_name(), Toast.LENGTH_SHORT);
-                }
+//                for (Classification classification: result.getClassifications()) {
+//                    Toast.makeText(context, classification.getProb() + ": " + classification.getClass_name(), Toast.LENGTH_SHORT);
+//                }
                 if (first.getProb() > second.getProb()) {
                     setValues(first, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
                 } else {
@@ -198,6 +207,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         ButterKnife.bind(this, v);
         shimmer.setDuration(2000);
         shimmer.start(desc_text);
+
         return v;
     }
 
@@ -215,7 +225,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         super.onStart();
         spiceManager.start (getActivity());
         if (hdSampleParse != null )
-            spiceManager.addListenerIfPending(Classifications.class, hdSampleParse.getObjectId(), new PredictionsRequestListener());
+            spiceManager.addListenerIfPending(Classifications.class, null, new PredictionsRequestListener());
     }
 
     @Override

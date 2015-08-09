@@ -12,6 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
@@ -29,15 +33,23 @@ import org.parceler.Parcels;
 /**
  * Created by bski on 7/28/15.
  */
-public class InitFragment extends Fragment implements ScreenShotable {
+public class InitFragment extends Fragment implements ScreenShotable,
+                                                      AdapterView.OnItemSelectedListener{
 
     public final String TAG = getClass().getCanonicalName();
     private StartCaptureListener startCaptureListener;
     private HDSample hdSample;
     private Shimmer shimmer = new Shimmer();
 
+    @Bind (R.id.manual_enter)
+    Spinner manual_entry;
+
+
     @Bind (R.id.desc_text)
     ShimmerTextView desc_text;
+
+    @Bind(R.id.manual_enter_text)
+    ShimmerTextView manual_enter_text;
 
     public interface StartCaptureListener {
         public void OnStartCapture(Parcelable hd_sample);
@@ -63,6 +75,7 @@ public class InitFragment extends Fragment implements ScreenShotable {
     public void onCreate (Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
         hdSample = new HDSample();
+        setRetainInstance(true);
     }
 
     @Override
@@ -70,7 +83,9 @@ public class InitFragment extends Fragment implements ScreenShotable {
         View v = inflater.inflate(R.layout.init_capture, container, false);
         ButterKnife.bind(this, v);
         shimmer.setDuration(2000);
-        shimmer.start (desc_text);
+        shimmer.start(desc_text);
+        shimmer.start (manual_enter_text);
+
         serial_code_input.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,7 +109,31 @@ public class InitFragment extends Fragment implements ScreenShotable {
                 }
             }
         });
+
+        ArrayAdapter<CharSequence> models = ArrayAdapter.createFromResource(getActivity(),
+                R.array.serial_number_array,
+                R.layout.textview_for_spinner);
+        models.setDropDownViewResource(R.layout.textview_for_spinner);
+        manual_entry.setAdapter(models);
+        manual_entry.setOnItemSelectedListener(this);
+
         return v;
+    }
+
+    @Override
+    public void onItemSelected (AdapterView<?> parent, View view, int pos, long id) {
+        if (pos > 0) {
+            String input_string = parent.getItemAtPosition(pos).toString();
+            Log.i(TAG, input_string);
+            hdSample.setSerial_code(input_string);
+            hdSample.setProduct_name(Util.getSampleProductName(input_string));
+            Parcelable hd_sample_extra = Parcels.wrap(HDSample.class, hdSample);
+            startCaptureListener.OnStartCapture(hd_sample_extra);
+        }
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
     }
 
     @Override

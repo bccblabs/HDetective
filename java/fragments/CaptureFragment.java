@@ -79,7 +79,6 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
         setHost(builder.useFullBleedPreview(true).build());
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setRetainInstance(true);
     }
 
     @Override

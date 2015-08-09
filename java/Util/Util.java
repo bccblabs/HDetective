@@ -1,7 +1,11 @@
 package Util;
 
 import android.text.TextUtils;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import widgets.KeyPairBoolData;
 
 public class Util {
 
@@ -81,6 +85,19 @@ public class Util {
                 result += hd_string + delimiter;
         }
         return result.substring(0, result.length()-1);
+    }
+
+
+    public static List<KeyPairBoolData> getSpinnerValues (List<String> values) {
+        final List<KeyPairBoolData> kv_list = new ArrayList<KeyPairBoolData>();
+        for(int i=0; i<values.size(); i++) {
+            KeyPairBoolData h = new KeyPairBoolData();
+            h.setId(i+1);
+            h.setName(values.get(i));
+            h.setSelected(false);
+            kv_list.add(h);
+        }
+        return kv_list;
     }
 
 }

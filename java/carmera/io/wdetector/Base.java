@@ -50,6 +50,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         initFragment = InitFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, initFragment)
+                .addToBackStack(initFragment.getClass().getCanonicalName())
                 .commit();
 
     }
@@ -85,6 +86,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         initFragment = InitFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, initFragment)
+                .addToBackStack("INIT")
                 .commit();
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -168,7 +170,10 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         switch (fragmentName) {
             case "Capture":
                 initFragment = InitFragment.newInstance();
-                getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, initFragment).addToBackStack("init").commit();
+                getSupportFragmentManager().beginTransaction()
+                                           .replace(R.id.content_frame, initFragment)
+                                           .addToBackStack(initFragment.getClass().getCanonicalName())
+                                           .commit();
                 return initFragment;
         }
         return null;

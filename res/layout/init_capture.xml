@@ -32,6 +32,26 @@
             android:id="@+id/serial_code_input"
             app:met_primaryColor="@android:color/holo_green_dark"
             android:hint="@string/label_hint"/>
+
+        <com.romainpiel.shimmer.ShimmerTextView
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:id="@+id/manual_enter_text"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_light"
+            android:text="Or Enter It Below"
+            app:reflectionColor="@android:color/background_light"/>
+        <Spinner
+            android:id="@+id/manual_enter"
+            android:layout_margin="8dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
     <com.gc.materialdesign.views.ButtonRectangle

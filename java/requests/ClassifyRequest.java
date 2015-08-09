@@ -35,7 +35,7 @@ public class ClassifyRequest extends OkHttpSpiceRequest<Classifications> {
 
         try {
             String req_json;
-            switch (image_serial) {
+            switch (this.image_serial) {
                 case "WD4000FYYZ-01UL1B1":
                     req_json = String.format ( "{\"classifier_id\": 34904, \"image_url\": \"%s\"}", image_url) ;
                     break;

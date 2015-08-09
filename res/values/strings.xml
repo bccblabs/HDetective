@@ -8,8 +8,9 @@
     <string name="wd_app_client_key">NcWpHSbqhWPAvB3QiuOV1g1iW3L0JD4kAU9GE0o8</string>
     <string name="save_result">Next</string>
     <string name="init_capture">Submit</string>
-    <string name="step_desc_0">Please Enter Model Number</string>
-    <string name="label_hint">Model Number Here</string>
+    <string name="step_desc_0">Please Scan Model Number</string>
+    <string name="manual_enter">Manual Enter Model Number Here</string>
+    <string name="label_hint">Scan Model Number Here</string>
     <string name="classifications_result">Classification Results</string>
     <string name="date_title">Exam Date</string>
     <string name="serial_code">Serial Code</string>
@@ -23,4 +24,6 @@
     <string name="retake">Retake Photo</string>
     <string name="classified_lable">Classified Label</string>
     <string name="product_name">Model Label</string>
+    <string name="type_to_search">Type to Search</string>
+
 </resources>
