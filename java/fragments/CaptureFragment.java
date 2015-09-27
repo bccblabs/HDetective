@@ -3,6 +3,7 @@ package fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;

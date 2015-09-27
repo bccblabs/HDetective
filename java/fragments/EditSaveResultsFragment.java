@@ -11,9 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -26,13 +26,11 @@ import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
 import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
-
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import Util.Util;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -44,8 +42,6 @@ import models.Classifications;
 import models.HDSample;
 import models.HDSampleParse;
 import requests.ClassifyRequest;
-import widgets.KeyPairBoolData;
-import widgets.MultiSpinnerSearch;
 import widgets.SquareImageView;
 import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
@@ -63,6 +59,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     private SampleSavedDialog sampleSavedDialog;
     private SpiceManager spiceManager = new SpiceManager(InMemorySpiceService.class);
     private InitFragment.StartCaptureListener startCaptureListener;
+    private SortedMap<String, String> product_serial = new TreeMap<>();
 
     @Bind(R.id.photo)
     SquareImageView photo_holder;
@@ -76,6 +73,8 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Bind(R.id.desc_text)
     ShimmerTextView desc_text;
 
+    @Bind(R.id.msg)
+    TextView msg;
 
     @OnClick(R.id.retake_photo_btn)
     public void backToCamera () {
@@ -92,6 +91,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, sample);
         sampleSavedDialog.setArguments(args);
         sampleSavedDialog.show(getChildFragmentManager(), "saved");
+        hdSampleParse.saveEventually();
     }
 
     private SaveCallback parseImageSaveCallback = new SaveCallback() {
@@ -100,14 +100,14 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
             String image_url = hdSampleParse.getHDPhoto().getUrl();
             if (photo_holder != null) {
                 Picasso.with(context).load(image_url)
-                        .fit()
+                        .resize(300,300)
                         .centerCrop()
                         .into(photo_holder);
 
                 Log.i (TAG, hdSample.getSerial_code().toUpperCase());
-                ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl(), hdSample.getSerial_code());
+                ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl());
                 spiceManager.execute(classifyRequest, null,
-                                                      DurationInMillis.ALWAYS_RETURNED,
+                                                      DurationInMillis.ALWAYS_EXPIRED ,
                                                       new PredictionsRequestListener());
             }
         }
@@ -120,40 +120,52 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
             hdSample.setDate(df.format(hdSampleParse.getCreatedAt()));
             hdSampleParse.setSerialCode(hdSample.serial_code);
             hdSampleParse.setProductName(hdSample.product_name);
-            hdSampleParse.saveEventually();
-            if (classification.class_name.equals("match")) {
+
+            if (product_serial.get(classification.class_name) == null ||
+                    (!product_serial.get(classification.class_name).equals(hdSample.serial_code) && classification.prob > 0.9) ) {
+                sampleParse.setClassifiedLabel("FAILED");
+                sample.setLabel("FAILED");
+                EditSaveResultsFragment.this.result_text.setText("FAILED");
+                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+            } else if (product_serial.get(classification.class_name)
+                              .equals (hdSample.serial_code) && classification.prob >= 0.9999) {
+
                 sampleParse.setClassifiedLabel("PASSED");
                 sample.setLabel("PASSED");
                 EditSaveResultsFragment.this.result_text.setText("PASSED");
                 EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
             } else {
-                sampleParse.setClassifiedLabel("FAILED");
-                sample.setLabel("FAILED");
-                EditSaveResultsFragment.this.result_text.setText("FAILED");
-                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+                sampleParse.setClassifiedLabel("RETRY");
+                sample.setLabel("RETRY");
+                EditSaveResultsFragment.this.result_text.setText("RETRY");
+                msg.setText("PHOTO REJECTED");
+                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
             }
             EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
         }
         @Override
         public void onRequestFailure (SpiceException spiceException) {
-//            Toast.makeText(getActivity(), "Error: " + spiceException.getMessage(), Toast.LENGTH_SHORT).show();
+            progress_bar.setVisibility(View.GONE);
+            EditSaveResultsFragment.this.result_text.setText("RETRY");
+            msg.setText("Certainty level not reached");
+            EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
         }
 
         @Override
         public void onRequestSuccess (Classifications result) {
             if (result != null) {
-                List<Classification> classifications = result.getClassifications();
                 progress_bar.setVisibility(View.GONE);
-                Classification first = classifications.get(0);
-                Classification second = classifications.get(1);
-//                for (Classification classification: result.getClassifications()) {
-//                    Toast.makeText(context, classification.getProb() + ": " + classification.getClass_name(), Toast.LENGTH_SHORT);
-//                }
-                if (first.getProb() > second.getProb()) {
-                    setValues(first, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
-                } else {
-                    setValues(second, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
+                double best = Double.MIN_VALUE;
+                Classification maxClass = new Classification();
+                for (Classification classification: result.getClassifications()) {
+                    if (classification.getProb() > best) {
+                        maxClass = classification;
+                        best = classification.getProb();
+                    }
                 }
+
+                setValues(maxClass, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
             }
         }
     }
@@ -194,6 +206,8 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
             hdSampleParse = new HDSampleParse();
             ParseFile hd_photo = new ParseFile(hdSample.image_data);
             hdSampleParse.setHDPhoto(hd_photo);
+            hdSampleParse.setSerialCode(hdSample.getSerial_code());
+            hdSampleParse.setProductName(hdSample.getProduct_name());
             hdSampleParse.saveInBackground(parseImageSaveCallback);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -207,6 +221,16 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         ButterKnife.bind(this, v);
         shimmer.setDuration(2000);
         shimmer.start(desc_text);
+        product_serial.put ("tahoexl", "WD5000AAKX-00ERMA0");
+        product_serial.put ("green6", "WD60EZRX-00MVLB1");
+        product_serial.put ("enterprise", "WD4000FYYZ-01UL1B1");
+        product_serial.put ("greenpower", "WD30EURS-63SPKY0");
+        product_serial.put ("nohdd", "Non-HDD");
+        product_serial.put ("wd5000aakx", "WD5000AAKX-00ERMA0");
+        product_serial.put ("wd4000fyyz", "WD4000FYYZ-01UL1B1");
+        product_serial.put ("wd60efrx", "WD60EFRX-00MVLB1");
+        product_serial.put ("wd60efrx", "WD60EZRX-00MVLB1");
+        product_serial.put ("desk_obj", "Non-HDD");
 
         return v;
     }
@@ -214,7 +238,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     @Override
     public void onViewCreated (View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-.    }
+    }
 
     @Override
     public void onStart () {

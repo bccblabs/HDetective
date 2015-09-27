@@ -8,19 +8,9 @@ import org.parceler.Parcel;
 @Parcel
 public class Classification {
     @JsonProperty
-    public String class_id;
-    @JsonProperty
     public String class_name;
     @JsonProperty
     public Double prob;
-
-    public String getClass_id() {
-        return class_id;
-    }
-
-    public void setClass_id(String class_id) {
-        this.class_id = class_id;
-    }
 
     public String getClass_name() {
         return class_name;

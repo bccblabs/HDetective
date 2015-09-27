@@ -1,23 +1,6 @@
 package Util;
 
-import android.text.TextUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import widgets.KeyPairBoolData;
-
 public class Util {
-
-    public static double parseDouble(String val, double defValue){
-        if(TextUtils.isEmpty(val)) return defValue;
-        try{
-            return Double.parseDouble(val);
-        }catch(NumberFormatException e){
-            return defValue;
-        }
-    }
-
     public static String getSampleProductName (String serial_code) {
         switch (serial_code) {
             case "WD4000FYYZ-01UL1B1":
@@ -26,78 +9,9 @@ public class Util {
                 return "Green 6TB";
             case "WD30EURS-63SPKY0":
                 return "GreenPower 3TB";
+            case "WD5000AAKX-00ERMA0":
+                return "WD Blue 500GB";
         }
         return "Not Found";
     }
-
-    public static String joinStrings (List<String> strings, String delimiter) {
-        String result = "";
-        for (String x:strings) {
-            String hd_string = null;
-            switch (x) {
-                case "Dell_2TB": {
-                    hd_string = "Dell (Unlabeled Hardrive) 2 TB";
-                    break;
-                }
-                case "WD_Black_Enterprise_500Gb": {
-                    hd_string = "Western Digital Enterprise Black 500 GB";
-                    break;
-                }
-                case "WD_Red_4.0TB": {
-                    hd_string = "Western Digital Red 4 TB";
-                    break;
-                }
-                case "WD_Green_6.0TB": {
-                    hd_string = "Western Digital Green 6 TB";
-                    break;
-                }
-                case "WD_Green_power": {
-                    hd_string = "Western Digital Green Power";
-                    break;
-                }
-                case "WD_Red_6.0TB": {
-                    hd_string = "Western Digital Red 6 TB";
-                    break;
-                }
-                case "not_WD": {
-                    hd_string = "Not Western Digital Manufactured";
-                    break;
-                }
-                case "WD": {
-                    hd_string = "Western Digital Manufactured";
-//                    hd_string = "WD";
-                    break;
-                }
-                case "small_board" : {
-                    hd_string = "Small Board";
-                    break;
-                }
-                case "large_board": {
-                    hd_string = "Large Board";
-                    break;
-                }
-                case "non_WD": {
-                    hd_string = "Not Western Digital Manufactured";
-                    break;
-                }
-            }
-            if (hd_string != null)
-                result += hd_string + delimiter;
-        }
-        return result.substring(0, result.length()-1);
-    }
-
-
-    public static List<KeyPairBoolData> getSpinnerValues (List<String> values) {
-        final List<KeyPairBoolData> kv_list = new ArrayList<KeyPairBoolData>();
-        for(int i=0; i<values.size(); i++) {
-            KeyPairBoolData h = new KeyPairBoolData();
-            h.setId(i+1);
-            h.setName(values.get(i));
-            h.setSelected(false);
-            kv_list.add(h);
-        }
-        return kv_list;
-    }
-
 }

@@ -12,17 +12,17 @@ import java.util.List;
 @Parcel
 public class Classifications {
     @JsonProperty
-    public List<Classification> predictions;
+    public List<Classification> top_3;
 
     public Classifications() {
     }
 
     public List<Classification> getClassifications() {
-        return predictions;
+        return top_3;
     }
 
     public void setClassifications(List<Classification> Classifications) {
-        this.predictions = Classifications;
+        this.top_3 = Classifications;
     }
 
 }
