@@ -1,69 +1,70 @@
 package carmera.io.wdetector;
 
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Parcelable;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.github.nkzawa.emitter.Emitter;
+import com.google.gson.Gson;
+import com.parse.ParseUser;
+import com.yalantis.guillotine.animation.GuillotineAnimation;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.parceler.Parcels;
 
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import Util.Util;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import fragments.CaptureFragment;
+import fragments.ExamineResultsFragment;
 import fragments.InitFragment;
 import fragments.EditSaveResultsFragment;
-import yalantis.com.sidemenu.interfaces.Resourceble;
-import yalantis.com.sidemenu.interfaces.ScreenShotable;
-import yalantis.com.sidemenu.model.SlideMenuItem;
-import yalantis.com.sidemenu.util.ViewAnimator;
+import models.HDSample;
 
 
-public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimatorListener,
-                                                       EditSaveResultsFragment.OnRetakePhotoCallback,
+public class Base extends AppCompatActivity implements EditSaveResultsFragment.OnRetakePhotoCallback,
                                                        CaptureFragment.OnCameraResultListener,
                                                        InitFragment.StartCaptureListener {
 
-    public static final String CLOSE = "Close";
     private final String TAG = getClass().getCanonicalName();
     public static final String EXTRA_SAMPLE_DETAILS = "extra_sample_details";
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private List<SlideMenuItem> list = new ArrayList<>();
+    private static final long RIPPLE_DURATION = 250;
+    private static GuillotineAnimation guillotineAnimation;
+    private View start_verification;
+    private View check_results;
 
-    private InitFragment initFragment;
-    private EditSaveResultsFragment editSaveResultsFragment;
-    private CaptureFragment captureFragment;
-    private ViewAnimator viewAnimator;
-    private LinearLayout linearLayout;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.root)
+    FrameLayout root;
+    @Bind(R.id.content_hamburger)
+    View contentHamburger;
+
 
     @Override
     public void retakePhoto() {
-        initFragment = InitFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, initFragment)
+                .replace(R.id.content_frame, InitFragment.newInstance())
                 .commit();
 
     }
 
     @Override
     public void OnStartCapture(Parcelable hdSample) {
-        captureFragment = CaptureFragment.newInstance();
+        CaptureFragment captureFragment = CaptureFragment.newInstance();
         assert (hdSample != null);
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_SAMPLE_DETAILS, hdSample);
@@ -77,7 +78,16 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
     public void OnCameraResult (Parcelable hdSample) {
         try {
             Log.i(TAG, "Socket Emit Upload Event");
-            Util.GetUploadSocket().emit("clz_data", "test");
+            HDSample hdd_sample = Parcels.unwrap(hdSample);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mm:ss.mmm", Locale.US);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            hdd_sample.setDate(sdf.format(new Date()));
+            hdd_sample.setTesterId(ParseUser.getCurrentUser().getUsername());
+
+            String hdd_json_string = new Gson().toJson(hdd_sample);
+            Log.i(TAG, hdd_json_string);
+            Util.getUploadSocket().emit("clz_data", hdd_json_string);
         } catch (Exception e) {
             Log.e(TAG, "Socket Emit Upload Event Error: " + e.getMessage());
         }
@@ -87,30 +97,57 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base);
-        initFragment = InitFragment.newInstance();
+        ButterKnife.bind(this);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, initFragment)
+                .replace(R.id.content_frame, InitFragment.newInstance())
                 .commit();
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerLayout.setScrimColor(Color.TRANSPARENT);
-        linearLayout = (LinearLayout) findViewById(R.id.left_drawer);
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
+        }
+
+        View guillotineMenu = LayoutInflater.from(this).inflate(R.layout.guillotine, null);
+        root.addView(guillotineMenu);
+        start_verification = guillotineMenu.findViewById(R.id.start_verification);
+        check_results = guillotineMenu.findViewById(R.id.check_results);
+
+        guillotineAnimation = new GuillotineAnimation.GuillotineBuilder(guillotineMenu, guillotineMenu.findViewById(R.id.guillotine_hamburger), contentHamburger)
+                .setStartDelay(RIPPLE_DURATION)
+                .setActionBarViewForAnimation(toolbar)
+                .build();
+
+
+        Log.i(TAG, "Socket Emit Connection Event");
+        Util.getUploadSocket().connect();
+        Util.getUploadSocket().on("register", OnRegister);
+
+        start_verification.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
+            public boolean onTouch(View v, MotionEvent event) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, InitFragment.newInstance())
+                        .commit();
+                guillotineAnimation.close();
+                return false;
             }
         });
 
-        Log.i(TAG, "Socket Emit Connection Event");
-        Util.GetUploadSocket().connect();
-        Util.GetUploadSocket().on ("register", OnRegister);
-        setActionBar();
-        createMenuList();
-        viewAnimator = new ViewAnimator<>(this, list, initFragment, drawerLayout, this);
+        check_results.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_frame, ExamineResultsFragment.newInstance())
+                        .commit();
+                guillotineAnimation.close();
+                return false;
+            }
+        });
     }
 
     private Emitter.Listener OnRegister = new Emitter.Listener() {
         @Override
+
         public void call (final Object... args) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -124,112 +161,9 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public void onDestroy () {
-        Util.GetUploadSocket().disconnect();
+        super.onDestroy();
+        Log.i (TAG, "[socket] disconnects");
+        Util.getUploadSocket().disconnect();
     }
 
-    private void createMenuList() {
-        SlideMenuItem close = new SlideMenuItem(CLOSE, R.drawable.icn_close);
-        list.add(close);
-        SlideMenuItem menuItem0 = new SlideMenuItem("Examine", R.drawable.ic_action_camera_white_small);
-        list.add(menuItem0);
-    }
-
-    private void setActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.background_floating_material_light));
-        setSupportActionBar(toolbar);
-        ActionBar actionbar  = getSupportActionBar();
-        if (actionbar != null) {
-            actionbar.setHomeButtonEnabled(true);
-            actionbar.setDisplayHomeAsUpEnabled(true);
-        }
-        drawerToggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar,R.string.drawer_open,R.string.drawer_close
-        ) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                linearLayout.removeAllViews();
-                linearLayout.invalidate();
-            }
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                super.onDrawerSlide(drawerView, slideOffset);
-                if (slideOffset > 0.6 && linearLayout.getChildCount() == 0)
-                    viewAnimator.showMenuContent();
-            }
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-        };
-        drawerLayout.setDrawerListener(drawerToggle);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-            return true;
-    }
-
-    private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String fragmentName) {
-        switch (fragmentName) {
-            case "Capture":
-                initFragment = InitFragment.newInstance();
-                getSupportFragmentManager().beginTransaction()
-                                           .replace(R.id.content_frame, initFragment)
-                                           .commit();
-                return initFragment;
-        }
-        return null;
-    }
-
-    @Override
-    public ScreenShotable onSwitch(Resourceble slideMenuItem, ScreenShotable screenShotable, int position) {
-        switch (slideMenuItem.getName()) {
-            case CLOSE:
-                return screenShotable;
-            case "Capture": {
-                return replaceFragment(screenShotable, position, "Capture");
-            }
-            default:
-                return replaceFragment(screenShotable, position, "Capture");
-        }
-    }
-
-    @Override
-    public void disableHomeButton() {
-        ActionBar toolbar = getSupportActionBar();
-        if (toolbar != null)
-            toolbar.setHomeButtonEnabled(false);
-    }
-
-    @Override
-    public void enableHomeButton() {
-        ActionBar toolbar = getSupportActionBar();
-        if (toolbar != null)
-            toolbar.setHomeButtonEnabled(true);
-        drawerLayout.closeDrawers();
-    }
-
-    @Override
-    public void addViewToContainer(View view) {
-        linearLayout.addView(view);
-    }
 }

@@ -25,5 +25,9 @@
     <string name="classified_lable">Classified Label</string>
     <string name="product_name">Model Label</string>
     <string name="type_to_search">Type to Search</string>
+    <string name="profile">Start Verification</string>
+    <string name="feed">Examine Results</string>
+    <string name="settings">SETTINGS</string>
+    <string name="activity">HDD Verification</string>
 
 </resources>

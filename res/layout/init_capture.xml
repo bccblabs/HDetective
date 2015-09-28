@@ -10,30 +10,28 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="28dp"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="28dp">
+        android:layout_centerInParent="true">
 
-        <com.romainpiel.shimmer.ShimmerTextView
+        <widgets.CanaroTextView
             android:id="@+id/desc_text"
             android:text="@string/step_desc_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@android:color/holo_blue_light"
-            app:reflectionColor="@android:color/background_light"/>
+            android:textColor="@color/selected_item_color"/>
+
         <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
             android:layout_marginTop="38dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:id="@+id/serial_code_input"
             app:met_primaryColor="@android:color/holo_green_dark"
             android:hint="@string/label_hint"/>
 
-        <com.romainpiel.shimmer.ShimmerTextView
+        <widgets.CanaroTextView
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,9 +39,8 @@
             android:id="@+id/manual_enter_text"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@android:color/holo_blue_light"
-            android:text="Or Choose From Below"
-            app:reflectionColor="@android:color/background_light"/>
+            android:textColor="@color/selected_item_color"
+            android:text="Or"/>
         <Spinner
             android:id="@+id/manual_enter"
             android:layout_margin="8dp"
@@ -52,15 +49,16 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"/>
 
-    </LinearLayout>
 
-    <com.gc.materialdesign.views.ButtonRectangle
-        android:id="@+id/init_capture"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="28dp"
-        android:background="@android:color/holo_blue_light"
-        android:text="@string/init_capture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <com.gc.materialdesign.views.ButtonRectangle
+            android:id="@+id/init_capture"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="28dp"
+            android:background="@android:color/holo_blue_light"
+            android:text="@string/init_capture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

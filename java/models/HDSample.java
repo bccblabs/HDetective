@@ -7,58 +7,69 @@ import java.util.List;
 
 @Parcel
 public class HDSample {
-    public String parse_id;
     public String date;
-    public String serial_code;
-    public byte[] image_data;
-    public String label;
-    public String product_name;
+    public String testerId;
+    public String imageData;
+    public String userHddLabel;
+    public String hddClzLabel;
+    public String s3Url;
 
-    public String getParse_id() {
-        return parse_id;
+//    public String barcode;
+//
+//    public void setBarcode (String serial_code) {
+//        this.barcode = serial_code;
+//    }
+//
+//    public String getBarcode() {
+//        return barcode;
+//    }
+
+    public void setImageData(String image_data) {
+        this.imageData = image_data;
     }
 
-    public void setParse_id(String parse_id) {
-        this.parse_id = parse_id;
+    public String getImageData () {
+        return imageData;
     }
 
-    public String getDate() {
-        return date;
+    public void setS3Url (String s3_url) {
+        this.s3Url = s3_url;
     }
 
-    public void setSerial_code(String serial_code) {
-        this.serial_code = serial_code;
-    }
-
-    public byte[] getImage_data() {
-        return image_data;
-    }
-
-    public void setImage_data(byte[] image_data) {
-        this.image_data = image_data;
+    public String getS3Url () {
+        return s3Url;
     }
 
     public void setDate(String date) {
         this.date = date;
     }
 
-    public String getSerial_code() {
-        return serial_code;
+    public String getDate() {
+        return date;
     }
 
-    public String getLabel() {
-        return label;
+    public void setHddClzLabel(String label) {
+        this.hddClzLabel = label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public String getHddClzLabel() {
+        return hddClzLabel;
     }
 
-    public String getProduct_name() {
-        return product_name;
+    public void setUserHddLabel(String product_name) {
+        this.userHddLabel = product_name;
     }
 
-    public void setProduct_name(String product_name) {
-        this.product_name = product_name;
+    public String getUserHddLabel() {
+        return userHddLabel;
     }
+
+    public void setTesterId (String tester_id) {
+        this.testerId = tester_id;
+    }
+
+    public String getTesterId () {
+        return testerId;
+    }
+
 }

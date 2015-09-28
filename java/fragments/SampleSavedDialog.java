@@ -65,9 +65,9 @@ public class SampleSavedDialog extends SupportBlurDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.save_result_dialog, null);
         ButterKnife.bind(this, v);
         date_text.setText(hdSample.getDate());
-        serial_text.setText(hdSample.getSerial_code());
-        product_name.setText(hdSample.getProduct_name());
-        exam_result_text.setText(hdSample.getLabel());
+//        serial_text.setText(hdSample.getSerial_code());
+//        product_name.setText(hdSample.getProduct_name());
+//        exam_result_text.setText(hdSample.getLabel());
         builder.setView(v);
         return builder.create();
     }

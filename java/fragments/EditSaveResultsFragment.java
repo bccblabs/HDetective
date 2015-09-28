@@ -2,7 +2,6 @@ package fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.octo.android.robospice.SpiceManager;
@@ -20,14 +18,11 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.SaveCallback;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
 import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -43,12 +38,11 @@ import models.HDSample;
 import models.HDSampleParse;
 import requests.ClassifyRequest;
 import widgets.SquareImageView;
-import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
 /**
  * Created by bski on 7/25/15.
  */
-public class EditSaveResultsFragment extends Fragment implements ScreenShotable {
+public class EditSaveResultsFragment extends Fragment {
 
     public final String TAG = getClass().getCanonicalName();
     private Context context;
@@ -104,7 +98,6 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
                         .centerCrop()
                         .into(photo_holder);
 
-                Log.i (TAG, hdSample.getSerial_code().toUpperCase());
                 ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl());
                 spiceManager.execute(classifyRequest, null,
                                                       DurationInMillis.ALWAYS_EXPIRED ,
@@ -116,31 +109,31 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     private final class PredictionsRequestListener implements RequestListener<Classifications> {
 
         public void setValues (Classification classification, HDSample sample, HDSampleParse sampleParse) {
-            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm", Locale.US);
-            hdSample.setDate(df.format(hdSampleParse.getCreatedAt()));
-            hdSampleParse.setSerialCode(hdSample.serial_code);
-            hdSampleParse.setProductName(hdSample.product_name);
-
-            if (product_serial.get(classification.class_name) == null ||
-                    (!product_serial.get(classification.class_name).equals(hdSample.serial_code) && classification.prob > 0.9) ) {
-                sampleParse.setClassifiedLabel("FAILED");
-                sample.setLabel("FAILED");
-                EditSaveResultsFragment.this.result_text.setText("FAILED");
-                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
-            } else if (product_serial.get(classification.class_name)
-                              .equals (hdSample.serial_code) && classification.prob >= 0.9999) {
-
-                sampleParse.setClassifiedLabel("PASSED");
-                sample.setLabel("PASSED");
-                EditSaveResultsFragment.this.result_text.setText("PASSED");
-                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
-            } else {
-                sampleParse.setClassifiedLabel("RETRY");
-                sample.setLabel("RETRY");
-                EditSaveResultsFragment.this.result_text.setText("RETRY");
-                msg.setText("PHOTO REJECTED");
-                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
-            }
+//            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm", Locale.US);
+//            hdSample.setDate(df.format(hdSampleParse.getCreatedAt()));
+//            hdSampleParse.setSerialCode(hdSample.serial_code);
+//            hdSampleParse.setProductName(hdSample.product_name);
+//
+//            if (product_serial.get(classification.class_name) == null ||
+//                    (!product_serial.get(classification.class_name).equals(hdSample.serial_code) && classification.prob > 0.9) ) {
+//                sampleParse.setClassifiedLabel("FAILED");
+//                sample.setLabel("FAILED");
+//                EditSaveResultsFragment.this.result_text.setText("FAILED");
+//                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+//            } else if (product_serial.get(classification.class_name)
+//                              .equals (hdSample.serial_code) && classification.prob >= 0.9999) {
+//
+//                sampleParse.setClassifiedLabel("PASSED");
+//                sample.setLabel("PASSED");
+//                EditSaveResultsFragment.this.result_text.setText("PASSED");
+//                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
+//            } else {
+//                sampleParse.setClassifiedLabel("RETRY");
+//                sample.setLabel("RETRY");
+//                EditSaveResultsFragment.this.result_text.setText("RETRY");
+//                msg.setText("PHOTO REJECTED");
+//                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
+//            }
             EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
         }
         @Override
@@ -148,7 +141,7 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
             progress_bar.setVisibility(View.GONE);
             EditSaveResultsFragment.this.result_text.setText("RETRY");
             msg.setText("Certainty level not reached");
-            EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.red));
+            EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
             EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
         }
 
@@ -180,13 +173,6 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
     }
 
     @Override
-    public void takeScreenShot () {
-    }
-
-    @Override
-    public Bitmap getBitmap() { return null; }
-
-    @Override
     public void onAttach (Activity activity) {
         super.onAttach(activity);
         this.context = activity;
@@ -203,12 +189,6 @@ public class EditSaveResultsFragment extends Fragment implements ScreenShotable 
         try {
             Bundle args = getArguments();
             hdSample = Parcels.unwrap(args.getParcelable(Base.EXTRA_SAMPLE_DETAILS));
-            hdSampleParse = new HDSampleParse();
-            ParseFile hd_photo = new ParseFile(hdSample.image_data);
-            hdSampleParse.setHDPhoto(hd_photo);
-            hdSampleParse.setSerialCode(hdSample.getSerial_code());
-            hdSampleParse.setProductName(hdSample.getProduct_name());
-            hdSampleParse.saveInBackground(parseImageSaveCallback);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             spiceManager.cancelAllRequests();

@@ -2,18 +2,14 @@ package fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -21,30 +17,23 @@ import android.widget.TextView;
 import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 import com.gc.materialdesign.views.ButtonFloat;
-import com.romainpiel.shimmer.Shimmer;
-import com.romainpiel.shimmer.ShimmerTextView;
-
 import org.parceler.Parcels;
-import org.w3c.dom.Text;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carmera.io.wdetector.Base;
 import carmera.io.wdetector.R;
 import models.HDSample;
-import yalantis.com.sidemenu.interfaces.ScreenShotable;
 
-public class CaptureFragment extends SupportCameraFragment implements ScreenShotable,
-                                                                      View.OnTouchListener {
+public class CaptureFragment extends SupportCameraFragment implements View.OnTouchListener {
 
     private ButtonFloat capture_btn = null;
     private FrameLayout camera_preview;
     private OnCameraResultListener camera_result_callback = null;
     private HDSample hdSample;
-    private Shimmer shimmer;
 
     @Bind(R.id.label_in_scan)
-    ShimmerTextView label;
+    TextView label;
 
     public interface OnCameraResultListener {
         public void OnCameraResult (Parcelable sample_details);
@@ -65,12 +54,6 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
                     ": needs to implement CameraResultListener" );
         }
     }
-
-    @Override
-    public void takeScreenShot () {}
-
-    @Override
-    public Bitmap getBitmap() { return null; }
 
     @Override
     public void onCreate (Bundle savedBundleInst) {
@@ -105,11 +88,7 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
         });
 
         ButterKnife.bind(this, v);
-        shimmer = new Shimmer();
-        label.setText(hdSample.getSerial_code());
-        Log.i(getClass().getCanonicalName(), hdSample.getSerial_code());
-        shimmer.setDuration(2000);
-        shimmer.start(label);
+        label.setText(hdSample.getUserHddLabel());
         camera_preview.setOnTouchListener(this);
         return v;
     }
@@ -134,7 +113,7 @@ public class CaptureFragment extends SupportCameraFragment implements ScreenShot
         @Override
         public void saveImage (PictureTransaction xact, byte[] image) {
             assert (image != null );
-            hdSample.setImage_data(image);
+            hdSample.setImageData(Base64.encodeToString(image, Base64.DEFAULT));
             camera_result_callback.OnCameraResult(Parcels.wrap(HDSample.class, hdSample));
         }
 

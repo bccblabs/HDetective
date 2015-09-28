@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,30 +8,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/camera_preview"/>
-    <com.romainpiel.shimmer.ShimmerTextView
+    <widgets.CanaroTextView
         android:id="@+id/label_in_scan"
-        android:textSize="30sp"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@android:color/background_light"
-        app:reflectionColor="@android:color/holo_blue_dark"
+        android:textColor="@color/selected_item_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="66dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentTop="true"
+        android:layout_margin="16dp"
+        android:gravity="start|top"
         />
-    <!--<TextView-->
-        <!--android:id="@+id/label_in_scan"-->
-        <!--android:textColor="@android:color/holo_blue_light"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="76dp"-->
-        <!--android:layout_marginStart="10dp"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:text="asdfasdfasdf"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--/>-->
+
     <com.gc.materialdesign.views.ButtonFloat
         android:id="@+id/capture_btn"
         android:layout_margin="28dp"
@@ -40,7 +26,7 @@
         android:layout_height="56dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/holo_blue_light"
+        android:background="@color/selected_item_color"
         materialdesign:animate="true"
         materialdesign:iconDrawable="@drawable/ic_photo_camera_white_48dp" />
 </RelativeLayout>
