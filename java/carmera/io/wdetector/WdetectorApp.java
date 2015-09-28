@@ -2,6 +2,8 @@ package carmera.io.wdetector;
 
 import android.app.Application;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseCrashReporting;
@@ -26,6 +28,7 @@ public class WdetectorApp extends Application {
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
         ParseObject.registerSubclass(HDSampleParse.class);
+
 
     }
 }

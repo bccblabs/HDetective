@@ -9,14 +9,22 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.github.nkzawa.emitter.Emitter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import Util.Util;
 import fragments.CaptureFragment;
 import fragments.InitFragment;
 import fragments.EditSaveResultsFragment;
@@ -32,6 +40,7 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
                                                        InitFragment.StartCaptureListener {
 
     public static final String CLOSE = "Close";
+    private final String TAG = getClass().getCanonicalName();
     public static final String EXTRA_SAMPLE_DETAILS = "extra_sample_details";
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -42,8 +51,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
     private CaptureFragment captureFragment;
     private ViewAnimator viewAnimator;
     private LinearLayout linearLayout;
-
-    private String TAG = this.getClass().getCanonicalName();
 
     @Override
     public void retakePhoto() {
@@ -68,14 +75,12 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
 
     @Override
     public void OnCameraResult (Parcelable hdSample) {
-        editSaveResultsFragment = EditSaveResultsFragment.newInstance();
-        assert (hdSample != null);
-        Bundle args = new Bundle();
-        args.putParcelable(EXTRA_SAMPLE_DETAILS, hdSample);
-        editSaveResultsFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, editSaveResultsFragment)
-                .commit();
+        try {
+            Log.i(TAG, "Socket Emit Upload Event");
+            Util.GetUploadSocket().emit("clz_data", "test");
+        } catch (Exception e) {
+            Log.e(TAG, "Socket Emit Upload Event Error: " + e.getMessage());
+        }
     }
 
     @Override
@@ -96,10 +101,30 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
             }
         });
 
-
+        Log.i(TAG, "Socket Emit Connection Event");
+        Util.GetUploadSocket().connect();
+        Util.GetUploadSocket().on ("register", OnRegister);
         setActionBar();
         createMenuList();
         viewAnimator = new ViewAnimator<>(this, list, initFragment, drawerLayout, this);
+    }
+
+    private Emitter.Listener OnRegister = new Emitter.Listener() {
+        @Override
+        public void call (final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String data = (String) args[0];
+                    Log.i (TAG, "connection socket id: " + data);
+                }
+            });
+        }
+    };
+
+    @Override
+    public void onDestroy () {
+        Util.GetUploadSocket().disconnect();
     }
 
     private void createMenuList() {
@@ -163,7 +188,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
             return true;
     }
 
-
     private ScreenShotable replaceFragment(ScreenShotable screenShotable, int topPosition, String fragmentName) {
         switch (fragmentName) {
             case "Capture":
@@ -175,7 +199,6 @@ public class Base extends ActionBarActivity implements ViewAnimator.ViewAnimator
         }
         return null;
     }
-
 
     @Override
     public ScreenShotable onSwitch(Resourceble slideMenuItem, ScreenShotable screenShotable, int position) {
