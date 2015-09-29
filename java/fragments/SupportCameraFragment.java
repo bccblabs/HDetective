@@ -31,7 +31,7 @@ import com.commonsware.cwac.camera.SimpleCameraHost;
 import java.io.IOException;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class SupportCameraFragment extends Fragment{
+public class SupportCameraFragment extends Fragment {
     private CameraView cameraView=null;
     private CameraHost host=null;
 
@@ -47,7 +47,7 @@ public class SupportCameraFragment extends Fragment{
                              ViewGroup container,
                              Bundle savedInstanceState) {
         cameraView=new CameraView(getActivity());
-        cameraView.setHost(getHost());
+        cameraView.setHost(getCameraHost());
 
         return(cameraView);
     }
@@ -107,7 +107,7 @@ public class SupportCameraFragment extends Fragment{
      *         this fragment, where the default is an instance
      *         of the stock SimpleCameraHost.
      */
-    public CameraHost getHost() {
+    public CameraHost getCameraHost() {
         if (host == null) {
             host=new SimpleCameraHost(getActivity());
         }

@@ -19,7 +19,6 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_blue_light"
-            app:reflectionColor="@android:color/background_light"
             android:text="@string/classifications_result"/>
         <FrameLayout
             android:layout_marginTop="10dp"
@@ -48,8 +47,7 @@
             android:layout_height="wrap_content"
             android:textSize="28sp"
             android:letterSpacing="0.8"
-            android:textColor="@android:color/background_light"
-            app:reflectionColor="@android:color/background_light"/>
+            android:textColor="@android:color/background_light"/>
         <TextView
             android:id="@+id/msg"
             android:layout_width="wrap_content"

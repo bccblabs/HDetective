@@ -14,14 +14,9 @@ import android.widget.TextView;
 
 import com.gc.materialdesign.views.ProgressBarCircularIndeterminate;
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.parse.ParseException;
-import com.parse.SaveCallback;
-import com.romainpiel.shimmer.Shimmer;
-import com.romainpiel.shimmer.ShimmerTextView;
-import com.squareup.picasso.Picasso;
+
 import org.parceler.Parcels;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -35,8 +30,6 @@ import carmera.io.wdetector.R;
 import models.Classification;
 import models.Classifications;
 import models.HDSample;
-import models.HDSampleParse;
-import requests.ClassifyRequest;
 import widgets.SquareImageView;
 
 /**
@@ -46,11 +39,11 @@ public class EditSaveResultsFragment extends Fragment {
 
     public final String TAG = getClass().getCanonicalName();
     private Context context;
-    private Shimmer shimmer = new Shimmer();
+//    private Shimmer shimmer = new Shimmer();
 
-    private HDSampleParse hdSampleParse;
+//    private HDSampleParse hdSampleParse;
     private HDSample hdSample;
-    private SampleSavedDialog sampleSavedDialog;
+//    private SampleSavedDialog sampleSavedDialog;
     private SpiceManager spiceManager = new SpiceManager(InMemorySpiceService.class);
     private InitFragment.StartCaptureListener startCaptureListener;
     private SortedMap<String, String> product_serial = new TreeMap<>();
@@ -61,11 +54,11 @@ public class EditSaveResultsFragment extends Fragment {
     @Bind(R.id.upload_progress_bar)
     ProgressBarCircularIndeterminate progress_bar;
 
-    @Bind(R.id.result_txt)
-    ShimmerTextView result_text;
-
-    @Bind(R.id.desc_text)
-    ShimmerTextView desc_text;
+//    @Bind(R.id.result_txt)
+//    ShimmerTextView result_text;
+//
+//    @Bind(R.id.desc_text)
+//    ShimmerTextView desc_text;
 
     @Bind(R.id.msg)
     TextView msg;
@@ -79,36 +72,19 @@ public class EditSaveResultsFragment extends Fragment {
     @OnClick(R.id.save_result_btn)
     public void SaveResult () {
         spiceManager.cancelAllRequests();
-        sampleSavedDialog = SampleSavedDialog.newInstance();
         Bundle args = new Bundle();
         Parcelable sample = Parcels.wrap(HDSample.class, hdSample);
         args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, sample);
-        sampleSavedDialog.setArguments(args);
-        sampleSavedDialog.show(getChildFragmentManager(), "saved");
-        hdSampleParse.saveEventually();
+//        sampleSavedDialog = SampleSavedDialog.newInstance();
+//        sampleSavedDialog.setArguments(args);
+//        sampleSavedDialog.show(getChildFragmentManager(), "saved");
+//        hdSampleParse.saveEventually();
     }
 
-    private SaveCallback parseImageSaveCallback = new SaveCallback() {
-        @Override
-        public void done(ParseException e) {
-            String image_url = hdSampleParse.getHDPhoto().getUrl();
-            if (photo_holder != null) {
-                Picasso.with(context).load(image_url)
-                        .resize(300,300)
-                        .centerCrop()
-                        .into(photo_holder);
-
-                ClassifyRequest classifyRequest = new ClassifyRequest(hdSampleParse.getHDPhoto().getUrl());
-                spiceManager.execute(classifyRequest, null,
-                                                      DurationInMillis.ALWAYS_EXPIRED ,
-                                                      new PredictionsRequestListener());
-            }
-        }
-    };
 
     private final class PredictionsRequestListener implements RequestListener<Classifications> {
 
-        public void setValues (Classification classification, HDSample sample, HDSampleParse sampleParse) {
+//        public void setValues (Classification classification, HDSample sample, HDSampleParse sampleParse) {
 //            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd hh:mm", Locale.US);
 //            hdSample.setDate(df.format(hdSampleParse.getCreatedAt()));
 //            hdSampleParse.setSerialCode(hdSample.serial_code);
@@ -134,15 +110,15 @@ public class EditSaveResultsFragment extends Fragment {
 //                msg.setText("PHOTO REJECTED");
 //                EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
 //            }
-            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
-        }
+//            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
+//        }
         @Override
         public void onRequestFailure (SpiceException spiceException) {
             progress_bar.setVisibility(View.GONE);
-            EditSaveResultsFragment.this.result_text.setText("RETRY");
+//            EditSaveResultsFragment.this.result_text.setText("RETRY");
             msg.setText("Certainty level not reached");
-            EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
-            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
+//            EditSaveResultsFragment.this.result_text.setTextColor(context.getResources().getColor(R.color.green));
+//            EditSaveResultsFragment.this.shimmer.start (EditSaveResultsFragment.this.result_text);
         }
 
         @Override
@@ -158,7 +134,7 @@ public class EditSaveResultsFragment extends Fragment {
                     }
                 }
 
-                setValues(maxClass, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
+//                setValues(maxClass, EditSaveResultsFragment.this.hdSample, EditSaveResultsFragment.this.hdSampleParse);
             }
         }
     }
@@ -199,8 +175,8 @@ public class EditSaveResultsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.edit_save_result, container, false);
         ButterKnife.bind(this, v);
-        shimmer.setDuration(2000);
-        shimmer.start(desc_text);
+//        shimmer.setDuration(2000);
+//        shimmer.start(desc_text);
         product_serial.put ("tahoexl", "WD5000AAKX-00ERMA0");
         product_serial.put ("green6", "WD60EZRX-00MVLB1");
         product_serial.put ("enterprise", "WD4000FYYZ-01UL1B1");
@@ -224,8 +200,8 @@ public class EditSaveResultsFragment extends Fragment {
     public void onStart () {
         super.onStart();
         spiceManager.start (getActivity());
-        if (hdSampleParse != null )
-            spiceManager.addListenerIfPending(Classifications.class, null, new PredictionsRequestListener());
+//        if (hdSampleParse != null )
+//            spiceManager.addListenerIfPending(Classifications.class, null, new PredictionsRequestListener());
     }
 
     @Override

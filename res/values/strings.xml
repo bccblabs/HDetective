@@ -6,8 +6,10 @@
     <string name="action_settings">Settings</string>
     <string name="wd_app_id">NmfDJkadMMV9ingD55koDiIPqRo3pylPoqR4y4I5</string>
     <string name="wd_app_client_key">NcWpHSbqhWPAvB3QiuOV1g1iW3L0JD4kAU9GE0o8</string>
-    <string name="save_result">Next</string>
+    <string name="save_result">Confirm</string>
+    <string name="retake">Retake</string>
     <string name="init_capture">Submit</string>
+    <string name="submit">Submit</string>
     <string name="step_desc_0">Please Scan Model Number</string>
     <string name="manual_enter">Select Model Number Here</string>
     <string name="label_hint">Scan Model Number Here</string>
@@ -21,7 +23,6 @@
     <string name="serial_helper_text">Serial Code Can\'t Be Changed Once Set</string>
     <string name="passed">Correct Hard Drive Label reported</string>
     <string name="failed">Wrong Hard Drive Label Reported</string>
-    <string name="retake">Retake Photo</string>
     <string name="classified_lable">Classified Label</string>
     <string name="product_name">Model Label</string>
     <string name="type_to_search">Type to Search</string>

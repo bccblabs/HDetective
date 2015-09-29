@@ -1,6 +1,5 @@
 package fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -13,12 +12,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 import com.gc.materialdesign.views.ButtonFloat;
 import org.parceler.Parcels;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carmera.io.wdetector.Base;
@@ -27,11 +24,10 @@ import models.HDSample;
 
 public class CaptureFragment extends SupportCameraFragment implements View.OnTouchListener {
 
-    private ButtonFloat capture_btn = null;
+    private ButtonFloat capture_btn;
     private FrameLayout camera_preview;
-    private OnCameraResultListener camera_result_callback = null;
     private HDSample hdSample;
-
+    private ReviewSubmit reviewSubmitDialog;
     @Bind(R.id.label_in_scan)
     TextView label;
 
@@ -42,17 +38,6 @@ public class CaptureFragment extends SupportCameraFragment implements View.OnTou
     public static CaptureFragment newInstance () {
         CaptureFragment captureFragment = new CaptureFragment();
         return captureFragment;
-    }
-
-    @Override
-    public void onAttach (Activity activity) {
-        super.onAttach(activity);
-        try {
-            camera_result_callback = (OnCameraResultListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
-                    ": needs to implement CameraResultListener" );
-        }
     }
 
     @Override
@@ -67,17 +52,11 @@ public class CaptureFragment extends SupportCameraFragment implements View.OnTou
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View cameraView = super.onCreateView(inflater, container, savedInstanceState);
         View v = inflater.inflate(R.layout.capture, container, false);
         camera_preview = (FrameLayout) v.findViewById(R.id.camera_preview);
         ((ViewGroup)v.findViewById(R.id.camera_preview)).addView(cameraView);
-
         capture_btn = (ButtonFloat) v.findViewById(R.id.capture_btn);
         capture_btn.setKeepScreenOn(true);
         capture_btn.setOnClickListener(new View.OnClickListener() {
@@ -86,13 +65,11 @@ public class CaptureFragment extends SupportCameraFragment implements View.OnTou
                 takeSimplePicture ();
             }
         });
-
         ButterKnife.bind(this, v);
         label.setText(hdSample.getUserHddLabel());
         camera_preview.setOnTouchListener(this);
         return v;
     }
-
 
     @Override
     public boolean onTouch (View v, MotionEvent e) {
@@ -109,14 +86,17 @@ public class CaptureFragment extends SupportCameraFragment implements View.OnTou
         public CaptureHost (Context cxt) {
             super (cxt);
         }
-
         @Override
         public void saveImage (PictureTransaction xact, byte[] image) {
             assert (image != null );
             hdSample.setImageData(Base64.encodeToString(image, Base64.DEFAULT));
-            camera_result_callback.OnCameraResult(Parcels.wrap(HDSample.class, hdSample));
+            Parcelable hd_sample_pclb = Parcels.wrap(HDSample.class, hdSample);
+            Bundle args = new Bundle();
+            args.putParcelable(Base.EXTRA_SAMPLE_DETAILS, hd_sample_pclb);
+            reviewSubmitDialog = ReviewSubmit.newInstance();
+            reviewSubmitDialog.setArguments(args);
+            reviewSubmitDialog.show(getChildFragmentManager(), "saved");
         }
-
     }
 
     @Override
@@ -126,7 +106,7 @@ public class CaptureFragment extends SupportCameraFragment implements View.OnTou
     }
 
     void takeSimplePicture () {
-        PictureTransaction xact = new PictureTransaction(getHost());
+        PictureTransaction xact = new PictureTransaction(getCameraHost());
         takePicture(xact);
     }
 }

@@ -35,8 +35,7 @@ import fragments.EditSaveResultsFragment;
 import models.HDSample;
 
 
-public class Base extends AppCompatActivity implements EditSaveResultsFragment.OnRetakePhotoCallback,
-                                                       CaptureFragment.OnCameraResultListener,
+public class Base extends AppCompatActivity implements CaptureFragment.OnCameraResultListener,
                                                        InitFragment.StartCaptureListener {
 
     private final String TAG = getClass().getCanonicalName();
@@ -52,15 +51,6 @@ public class Base extends AppCompatActivity implements EditSaveResultsFragment.O
     FrameLayout root;
     @Bind(R.id.content_hamburger)
     View contentHamburger;
-
-
-    @Override
-    public void retakePhoto() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, InitFragment.newInstance())
-                .commit();
-
-    }
 
     @Override
     public void OnStartCapture(Parcelable hdSample) {
@@ -88,6 +78,9 @@ public class Base extends AppCompatActivity implements EditSaveResultsFragment.O
             String hdd_json_string = new Gson().toJson(hdd_sample);
             Log.i(TAG, hdd_json_string);
             Util.getUploadSocket().emit("clz_data", hdd_json_string);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, InitFragment.newInstance())
+                    .commit();
         } catch (Exception e) {
             Log.e(TAG, "Socket Emit Upload Event Error: " + e.getMessage());
         }

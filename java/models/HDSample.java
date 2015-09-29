@@ -1,28 +1,47 @@
 package models;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.parceler.Parcel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HDSample {
-    public String date;
-    public String testerId;
+    @JsonProperty
+    public String barcode;
+    @JsonProperty
+    public String clzRes;
+    @JsonProperty
     public String imageData;
-    public String userHddLabel;
-    public String hddClzLabel;
+    @JsonProperty
     public String s3Url;
+    @JsonProperty
+    public String date;
+    @JsonProperty
+    public String hddClzLabel;
+    @JsonProperty
+    public String userHddLabel;
+    @JsonProperty
+    public String testerId;
+    @JsonProperty
+    public List<Classification> topFive;
 
-//    public String barcode;
-//
-//    public void setBarcode (String serial_code) {
-//        this.barcode = serial_code;
-//    }
-//
-//    public String getBarcode() {
-//        return barcode;
-//    }
+    public HDSample() {
+    }
+
+    public void setBarcode (String serial_code) {
+        this.barcode = serial_code;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setClzRes (String clzRes_) { this.clzRes = clzRes_; }
+
+    public String getClzRes () { return clzRes; }
 
     public void setImageData(String image_data) {
         this.imageData = image_data;
@@ -70,6 +89,14 @@ public class HDSample {
 
     public String getTesterId () {
         return testerId;
+    }
+
+    public List<Classification> getTopFive() {
+        return topFive;
+    }
+
+    public void setTopFive(List<Classification> topFive) {
+        this.topFive = topFive;
     }
 
 }

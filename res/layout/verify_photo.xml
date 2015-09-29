@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <widgets.SquareImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:id="@+id/photo"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="28dp">
+        <com.gc.materialdesign.views.ButtonRectangle
+            android:id="@+id/retake_photo_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/retake"
+            android:background="@android:color/holo_blue_light">
+        </com.gc.materialdesign.views.ButtonRectangle>
+        <com.gc.materialdesign.views.ButtonRectangle
+            android:id="@+id/confirm_upload"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/submit"
+            android:background="@android:color/holo_green_dark">
+        </com.gc.materialdesign.views.ButtonRectangle>
+
+    </LinearLayout>
+</LinearLayout>
