@@ -6,10 +6,8 @@ import com.github.nkzawa.socketio.client.Socket;
 import java.net.URISyntaxException;
 
 public class Util {
-
     private static final String TAG = "Util";
     private static Socket uploadSocket;
-
     public static Socket getUploadSocket () {
         if (uploadSocket == null) {
             try {
@@ -22,5 +20,4 @@ public class Util {
         Log.i (TAG, uploadSocket.toString());
         return uploadSocket;
     }
-
 }

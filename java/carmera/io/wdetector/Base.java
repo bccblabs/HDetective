@@ -140,7 +140,6 @@ public class Base extends AppCompatActivity implements CaptureFragment.OnCameraR
 
     private Emitter.Listener OnRegister = new Emitter.Listener() {
         @Override
-
         public void call (final Object... args) {
             runOnUiThread(new Runnable() {
                 @Override

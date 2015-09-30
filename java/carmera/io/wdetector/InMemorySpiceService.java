@@ -14,6 +14,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import models.Classifications;
+import models.HDSampleList;
 
 
 public class InMemorySpiceService extends SpringAndroidSpiceService {
@@ -36,7 +37,7 @@ public class InMemorySpiceService extends SpringAndroidSpiceService {
     public CacheManager createCacheManager(Application application) {
         CacheManager manager = new CacheManager();
         try {
-            GsonObjectPersister genDataPersister = new GsonObjectPersister(application, Classifications.class);
+            GsonObjectPersister genDataPersister = new GsonObjectPersister(application, HDSampleList.class);
 
             manager.addPersister(genDataPersister);
         } catch (CacheCreationException e) {
